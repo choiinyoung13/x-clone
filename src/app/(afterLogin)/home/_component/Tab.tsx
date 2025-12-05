@@ -1,15 +1,16 @@
-"use client";
-import style from './tab.module.css';
-import {useContext} from "react";
-import {TabContext} from "@/app/(afterLogin)/home/_component/TabProvider";
+'use client'
+import { useContext } from 'react'
+import style from './tab.module.css'
+import { TabContext } from './TabProvider'
 
 export default function Tab() {
-  const { tab, setTab} = useContext(TabContext);
+  const { tab, setTab } = useContext(TabContext)
+
   const onClickRec = () => {
-    setTab('rec');
+    setTab('rec')
   }
   const onClickFol = () => {
-    setTab('fol');
+    setTab('fol')
   }
 
   return (
@@ -18,11 +19,11 @@ export default function Tab() {
       <div className={style.homeTab}>
         <div onClick={onClickRec}>
           추천
-          <div className={style.tabIndicator} hidden={tab === 'fol'}></div>
+          <div className={tab === 'rec' ? style.tabIndicator : ''}></div>
         </div>
         <div onClick={onClickFol}>
           팔로우 중
-          <div className={style.tabIndicator} hidden={tab === 'rec'}></div>
+          <div className={tab === 'fol' ? style.tabIndicator : ''}></div>
         </div>
       </div>
     </div>
