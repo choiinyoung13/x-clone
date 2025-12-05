@@ -30,8 +30,8 @@
 }
 
 .postUserSection {
-  display: flex;
-  align-items: center;
+  /* display: flex;
+  align-items: center; */
   margin-right: 12px;
   width: 40px;
 }
@@ -71,6 +71,9 @@
 }
 .postDate:hover {
   text-decoration: underline;
+}
+
+.postImageSection {
 }
 
 .postBody {
