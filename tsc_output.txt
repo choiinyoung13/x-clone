@@ -1,0 +1,5 @@
+﻿src/app/(afterLogin)/search/_component/SearchResult.tsx(4,31): error TS2307: Cannot find module '@/model/Post' or its corresponding type declarations.
+src/app/(afterLogin)/search/_component/SearchResult.tsx(5,31): error TS2307: Cannot find module '@/app/(afterLogin)/search/_lib/getSearchResult' or its corresponding type declarations.
+src/app/(afterLogin)/search/_component/SearchResult.tsx(6,24): error TS2307: Cannot find module '@tanstack/react-query' or its corresponding type declarations.
+src/app/(afterLogin)/search/_component/SearchResult.tsx(20,29): error TS2322: Type '{ key: any; post: any; }' is not assignable to type 'IntrinsicAttributes & Props'.
+  Property 'post' does not exist on type 'IntrinsicAttributes & Props'.
