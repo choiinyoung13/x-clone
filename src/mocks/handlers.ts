@@ -20,10 +20,10 @@ const delay = (ms: number) =>
     setTimeout(res, ms)
   })
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || ''
 
 export const handlers = [
-  http.post(`/${baseUrl}/api/login`, () => {
+  http.post(`${baseUrl}/api/login`, () => {
     console.log('로그인')
     return HttpResponse.json(User[1], {
       headers: {
@@ -31,7 +31,7 @@ export const handlers = [
       },
     })
   }),
-  http.post(`/${baseUrl}/api/logout`, () => {
+  http.post(`${baseUrl}/api/logout`, () => {
     console.log('로그아웃')
     return new HttpResponse(null, {
       headers: {
@@ -39,7 +39,7 @@ export const handlers = [
       },
     })
   }),
-  http.post(`/${baseUrl}/api/users`, async ({ request }) => {
+  http.post(`${baseUrl}/api/users`, async ({ request }) => {
     console.log('회원가입')
     // return HttpResponse.text(JSON.stringify('user_exists'), {
     //   status: 403,
@@ -50,7 +50,7 @@ export const handlers = [
       },
     })
   }),
-  http.get(`/${baseUrl}/api/postRecommends`, async ({ request }) => {
+  http.get(`${baseUrl}/api/postRecommends`, async ({ request }) => {
     console.log('추천게시글')
     await delay(3000)
     console.log('딜레이 종료')
@@ -106,7 +106,7 @@ export const handlers = [
       },
     ])
   }),
-  http.get(`/${baseUrl}/api/followingPosts`, async ({ request }) => {
+  http.get(`${baseUrl}/api/followingPosts`, async ({ request }) => {
     await delay(3000)
     return HttpResponse.json([
       {
@@ -146,7 +146,7 @@ export const handlers = [
       },
     ])
   }),
-  http.get(`/${baseUrl}/api/search/:tag`, ({ request, params }) => {
+  http.get(`${baseUrl}/api/search/:tag`, ({ request, params }) => {
     const { tag } = params
     return HttpResponse.json([
       {
@@ -186,7 +186,7 @@ export const handlers = [
       },
     ])
   }),
-  http.get(`/${baseUrl}/api/users/:userId/posts`, ({ request, params }) => {
+  http.get(`${baseUrl}/api/users/:userId/posts`, ({ request, params }) => {
     const { userId } = params
     return HttpResponse.json([
       {
@@ -227,7 +227,7 @@ export const handlers = [
     ])
   }),
   http.get(
-    `/${baseUrl}/api/users/:userId`,
+    `${baseUrl}/api/users/:userId`,
     ({ request, params }): StrictResponse<any> => {
       const { userId } = params
       const found = User.find(v => v.id === userId)
@@ -243,7 +243,7 @@ export const handlers = [
     }
   ),
   http.get(
-    `/${baseUrl}/api/posts/:postId`,
+    `${baseUrl}/api/posts/:postId`,
     ({ request, params }): StrictResponse<any> => {
       const { postId } = params
       if (parseInt(postId as string) > 10) {
@@ -267,7 +267,7 @@ export const handlers = [
       })
     }
   ),
-  http.get(`/${baseUrl}/api/posts/:postId/comments`, ({ request, params }) => {
+  http.get(`${baseUrl}/api/posts/:postId/comments`, ({ request, params }) => {
     const { postId } = params
     return HttpResponse.json([
       {
@@ -307,10 +307,10 @@ export const handlers = [
       },
     ])
   }),
-  http.get(`/${baseUrl}/api/followRecommends`, ({ request }) => {
+  http.get(`${baseUrl}/api/followRecommends`, ({ request }) => {
     return HttpResponse.json(User)
   }),
-  http.get(`/${baseUrl}/api/trends`, ({ request }) => {
+  http.get(`${baseUrl}/api/trends`, ({ request }) => {
     return HttpResponse.json([
       { tagId: 1, title: '제로초', count: 1264 },
       { tagId: 2, title: '원초', count: 1264 },

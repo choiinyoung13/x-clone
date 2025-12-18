@@ -18,9 +18,9 @@ const mockingEnabledPromise =
           },
         })
         worker.use(...handlers)
-        ;(module as any).hot?.dispose(() => {
-          worker.stop()
-        })
+        // (module as any).hot?.dispose(() => {
+        //   worker.stop()
+        // })
         console.log(worker.listHandlers())
       })
     : Promise.resolve()

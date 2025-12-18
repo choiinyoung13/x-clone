@@ -2,7 +2,9 @@
 
 import style from './signup.module.css'
 import BackButton from '@/app/(beforeLogin)/_component/BackButton'
-import { useFormState, useFormStatus } from 'react-dom'
+import { useActionState } from 'react'
+import { useFormStatus } from 'react-dom'
+import { signupAction } from '../_lib/signup'
 
 function showMessage(message: string | null) {
   if (message === 'no_id') {
@@ -25,6 +27,7 @@ function showMessage(message: string | null) {
 
 export default function SignupModal() {
   const { pending } = useFormStatus()
+  const [state, formAction] = useActionState(signupAction, { message: null })
 
   return (
     <>
@@ -34,7 +37,7 @@ export default function SignupModal() {
             <BackButton />
             <div>계정을 생성하세요.</div>
           </div>
-          <form>
+          <form action={formAction}>
             <div className={style.modalBody}>
               <div className={style.inputDiv}>
                 <label className={style.inputLabel} htmlFor="id">
@@ -46,7 +49,7 @@ export default function SignupModal() {
                   className={style.input}
                   type="text"
                   placeholder=""
-                  required
+                  defaultValue={state.enteredValue?.id}
                 />
               </div>
               <div className={style.inputDiv}>
@@ -59,7 +62,7 @@ export default function SignupModal() {
                   className={style.input}
                   type="text"
                   placeholder=""
-                  required
+                  defaultValue={state.enteredValue?.name}
                 />
               </div>
               <div className={style.inputDiv}>
@@ -72,7 +75,7 @@ export default function SignupModal() {
                   className={style.input}
                   type="password"
                   placeholder=""
-                  required
+                  defaultValue={state.enteredValue?.password}
                 />
               </div>
               <div className={style.inputDiv}>
@@ -82,13 +85,13 @@ export default function SignupModal() {
                 <input
                   id="image"
                   name="image"
-                  required
                   className={style.input}
                   type="file"
                   accept="image/*"
                 />
               </div>
             </div>
+
             <div className={style.modalFooter}>
               <button
                 type="submit"
@@ -97,7 +100,7 @@ export default function SignupModal() {
               >
                 가입하기
               </button>
-              <div className={style.error}></div>
+              <div className={style.error}>{showMessage(state?.message)}</div>
             </div>
           </form>
         </div>
