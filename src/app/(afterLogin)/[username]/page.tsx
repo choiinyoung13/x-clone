@@ -1,6 +1,7 @@
 import BackButton from '@/app/(afterLogin)/_component/BackButton'
 import style from './profile.module.css'
 import Post from '../_component/Post'
+import FollowButton from './_component/FollowButton'
 
 export default async function Profile() {
   const user = {
@@ -25,7 +26,7 @@ export default async function Profile() {
             <div>@{user.id}</div>
           </div>
 
-          <button className={style.followButton}>{'팔로우'}</button>
+          <FollowButton />
         </div>
       </div>
       <div>

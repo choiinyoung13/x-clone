@@ -4,6 +4,8 @@ import style from '@/app/(beforeLogin)/_component/login.module.css'
 import { ChangeEventHandler, FormEventHandler, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import BackButton from './BackButton'
+import { signIn } from 'next-auth/react'
+export { GET, POST } from '@/auth'
 
 export default function LoginModal() {
   const [id, setId] = useState('')
@@ -14,9 +16,18 @@ export default function LoginModal() {
   const onSubmit: FormEventHandler<HTMLFormElement> = async e => {
     e.preventDefault()
     setMessage('')
-  }
-  const onClickClose = () => {
-    router.back()
+
+    try {
+      await signIn('credentials', {
+        username: id,
+        password,
+        redirect: false,
+      })
+      router.replace('/home')
+    } catch (e) {
+      console.error(e)
+      setMessage('아이디와 비밀번호가 일치하지 않습니다.')
+    }
   }
 
   const onChangeId: ChangeEventHandler<HTMLInputElement> = e => {

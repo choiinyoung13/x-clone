@@ -1,3 +1,4 @@
+import AuthSession from './_component/AuthSession'
 import { MSWProvider } from './_component/MSWComponent'
 import './globals.css'
 
@@ -17,7 +18,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <MSWProvider>{children}</MSWProvider>
+        <MSWProvider>
+          <AuthSession>{children}</AuthSession>
+        </MSWProvider>
       </body>
     </html>
   )

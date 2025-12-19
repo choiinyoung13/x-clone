@@ -1,5 +1,6 @@
 'use server'
 
+import { signIn } from '@/auth'
 import { redirect } from 'next/navigation'
 
 export const signupAction = async (
@@ -52,11 +53,11 @@ export const signupAction = async (
     }
     console.log(await response.json())
     shouldRedirect = true
-    // await signIn('credentials', {
-    //   username: formData.get('id'),
-    //   password: formData.get('password'),
-    //   redirect: false,
-    // })
+    await signIn('credentials', {
+      username: id,
+      password: password,
+      redirect: false,
+    })
   } catch (err) {
     console.error(err)
     return { message: null }

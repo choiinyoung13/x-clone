@@ -1,9 +1,17 @@
 'use client'
 
+import { useSession } from 'next-auth/react'
 import style from './followRecommend.module.css'
+import { redirect } from 'next/navigation'
 
 export default function FollowRecommend() {
-  const onFollow = () => {}
+  const { data } = useSession()
+
+  const onFollow = () => {
+    if (!data) {
+      redirect('/login')
+    }
+  }
 
   const user = {
     id: 'elonmusk',

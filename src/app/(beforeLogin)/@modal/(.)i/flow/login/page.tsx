@@ -1,5 +1,14 @@
 import LoginModal from '@/app/(beforeLogin)/_component/LoginModal'
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
 
-export default function Page() {
+export default async function Page() {
+  const session = await auth()
+
+  if (session?.user) {
+    redirect('/home')
+    return null
+  }
+
   return <LoginModal />
 }
