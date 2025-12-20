@@ -1,29 +1,49 @@
 'use client'
 
-import style from '@/app/(afterLogin)/@modal/(.)[username]/status/[id]/photo/[photoId]/photoModal.module.css'
+import style from '../photoModal.module.css'
 import ActionButtons from '@/app/(afterLogin)/_component/ActionButtons'
-import React from 'react'
+
+import type { Post as IPost } from '@/model/Post'
+import { useQuery } from '@tanstack/react-query'
+import PhotoSlider from './PhotoSlider'
+import PhotoModalCloseButton from './PhotoModalCloseButton'
+import { getPostById } from '@/app/(afterLogin)/[username]/status/[id]/_lib/getPostById'
+
+// const photo = {
+//   imageId: '1',
+//   links: [faker.image.url(), faker.image.url(), faker.image.url()],
+//   Post: {
+//     content: faker.lorem.text(),
+//   },
+// }
+
 type Props = {
   id: string
+  username: string
 }
-export default function ImageZone({ id }: Props) {
-  // const {data: post, error} = useQuery<IPost, Object, IPost, [_1: string, _2: string]>({
-  //   queryKey: ['posts', id],
-  //   queryFn: getSinglePost,
-  //   staleTime: 60 * 1000, // fresh -> stale, 5분이라는 기준
-  //   gcTime: 300 * 1000,
-  // });
+export default function ImageZone({ id, username }: Props) {
+  const { data: post } = useQuery<
+    IPost,
+    Object,
+    IPost,
+    [_1: string, string, _3: string, string]
+  >({
+    queryKey: ['users', username, 'posts', id],
+    queryFn: getPostById,
+    staleTime: 60 * 1000, // 1분
+    gcTime: 60 * 5000,
+  })
 
-  // if (!post?.Images[0]) {
-  //   return null;
-  // }
+  if (!post?.Images[0]) {
+    return null
+  }
   return (
     <div className={style.imageZone}>
-      {/* <img src={post.Images[0].link} alt={post.content}/>
-      <div className={style.image} style={{backgroundImage: `url(${post.Images[0].link})`}}/> */}
+      <PhotoSlider post={post} />
       <div className={style.buttonZone}>
+        <PhotoModalCloseButton />
         <div className={style.buttonInner}>
-          {/* <ActionButtons white post={post}/> */}
+          <ActionButtons white />
         </div>
       </div>
     </div>

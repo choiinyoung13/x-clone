@@ -1,71 +1,39 @@
-'use client'
-
-import BackButton from '@/app/(afterLogin)/_component/BackButton'
 import style from './profile.module.css'
-import Post from '../_component/Post'
-import FollowButton from './_component/FollowButton'
-import { useQuery } from '@tanstack/react-query'
-import { User } from '@/model/User'
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from '@tanstack/react-query'
 import { getUser } from './_lib/getUser'
-import { useParams } from 'next/navigation'
 import { getUserPosts } from './_lib/getUserPosts'
-import type { Post as IPost } from '@/model/Post'
+import UserPosts from './_component/UserPosts'
+import User from './_component/UserInfo'
 
 type Props = {
-  username: string
+  params: Promise<{ username: string }>
 }
 
-export default function Profile() {
-  const { username } = useParams()
-  const { data: user } = useQuery<
-    User,
-    Object,
-    User,
-    [_1: string, Props['username']]
-  >({
-    queryKey: ['user', username as string],
+export default async function Profile({ params }: Props) {
+  const { username } = await params
+  const queryClient = new QueryClient()
+
+  await queryClient.prefetchQuery({
+    queryKey: ['users', username],
     queryFn: getUser,
-    staleTime: 60 * 1000,
-    gcTime: 60 * 5000,
+  })
+  await queryClient.prefetchQuery({
+    queryKey: ['posts', 'users', username],
+    queryFn: getUserPosts,
   })
 
-  const { data: userPosts } = useQuery<
-    IPost[],
-    Object,
-    IPost[],
-    [_1: string, _2: string, Props['username']]
-  >({
-    queryKey: ['posts', 'user', username as string],
-    queryFn: getUserPosts,
-    staleTime: 60 * 1000,
-    gcTime: 60 * 5000,
-    enabled: !!user,
-  })
+  const dehydrateState = dehydrate(queryClient)
 
   return (
     <main className={style.main}>
-      <div className={style.header}>
-        <BackButton />
-        <h3 className={style.headerTitle}>{user?.nickname}</h3>
-      </div>
-      <div className={style.userZone}>
-        <div className={style.userRow}>
-          <div className={style.userImage}>
-            <img src={user?.image} alt={user?.id} />
-          </div>
-          <div className={style.userName}>
-            <div>{user?.nickname}</div>
-            <div>@{user?.id}</div>
-          </div>
-
-          <FollowButton />
-        </div>
-      </div>
-      <div>
-        {userPosts?.map(post => (
-          <Post key={post.postId} post={post} />
-        ))}
-      </div>
+      <HydrationBoundary state={dehydrateState}>
+        <User username={username} />
+        <UserPosts username={username} />
+      </HydrationBoundary>
     </main>
   )
 }

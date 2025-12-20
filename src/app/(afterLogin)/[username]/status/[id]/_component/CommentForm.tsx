@@ -2,11 +2,13 @@
 
 import { ChangeEvent, useRef, useState } from 'react'
 import style from './commentForm.module.css'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 type Props = {
-  id: string | number
+  id: string
+  username: string
 }
-export default function CommentForm({ id }: Props) {
+export default function CommentForm({ id, username }: Props) {
   const user = {
     id: 'elonmusk',
     nickname: 'Elon Musk',
@@ -15,11 +17,17 @@ export default function CommentForm({ id }: Props) {
 
   const [content, setContent] = useState('')
   const imageRef = useRef<HTMLInputElement>(null)
+  const queryClient = useQueryClient()
+  const post = queryClient.getQueryData(['users', username, 'posts', id])
 
   const onClickButton = () => {}
   const onSubmit = () => {}
   const onChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value)
+  }
+
+  if (!post) {
+    return null
   }
 
   return (

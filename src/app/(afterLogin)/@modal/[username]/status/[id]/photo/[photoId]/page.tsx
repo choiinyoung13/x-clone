@@ -1,41 +1,45 @@
-import PhotoModalCloseButton from './_component/PhotoModalCloseButton'
 import style from './photoModal.module.css'
-
-import { faker } from '@faker-js/faker'
-import ActionButtons from '../../../../../../_component/ActionButtons'
 import CommentForm from '../../../../../../[username]/status/[id]/_component/CommentForm'
-import Post from '../../../../../../_component/Post'
-import PhotoSlider from './_component/PhotoSlider'
 
-export default function photoModal() {
-  const photo = {
-    imageId: 1,
-    links: [faker.image.url(), faker.image.url(), faker.image.url()],
-    Post: {
-      content: faker.lorem.text(),
-    },
-  }
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from '@tanstack/react-query'
+import { getCommentsById } from '@/app/(afterLogin)/[username]/status/[id]/_lib/getCommentsById'
+import { getPostById } from '@/app/(afterLogin)/[username]/status/[id]/_lib/getPostById'
+import Comments from '@/app/(afterLogin)/[username]/status/[id]/_component/Comments'
+import SinglePost from '@/app/(afterLogin)/[username]/status/[id]/_component/Post'
+import ImageZone from './_component/ImageZone'
+
+type Props = {
+  params: Promise<{ id: string; username: string }>
+}
+
+export default async function photoModal({ params }: Props) {
+  const { username, id } = await params
+
+  const queryClient = new QueryClient()
+  await queryClient.prefetchQuery({
+    queryKey: ['users', username, 'posts', id],
+    queryFn: getPostById,
+  })
+  await queryClient.prefetchQuery({
+    queryKey: ['users', username, 'posts', id, 'comments'],
+    queryFn: getCommentsById,
+  })
+  const dehydrateState = dehydrate(queryClient)
 
   return (
     <div className={style.container}>
-      <div className={style.imageZone}>
-        <PhotoSlider post={photo} />
-        <div className={style.buttonZone}>
-          <PhotoModalCloseButton />
-          <div className={style.buttonInner}>
-            <ActionButtons white />
-          </div>
+      <HydrationBoundary state={dehydrateState}>
+        <ImageZone id={id} username={username} />
+        <div className={style.commentZone}>
+          <SinglePost noImage id={id} username={username} />
+          <CommentForm id={id} username={username} />
+          <Comments id={id} username={username} />
         </div>
-      </div>
-      <div className={style.commentZone}>
-        <Post noImage />
-        <CommentForm id={photo.imageId} />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-      </div>
+      </HydrationBoundary>
     </div>
   )
 }

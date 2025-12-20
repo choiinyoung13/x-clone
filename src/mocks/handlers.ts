@@ -14,7 +14,7 @@ const User = [
   { id: 'zerohch0', nickname: '제로초', image: '/5Udwvqim.jpg' },
   { id: 'leoturtle', nickname: '레오', image: faker.image.avatar() },
 ]
-const Posts = []
+
 const delay = (ms: number) =>
   new Promise(res => {
     setTimeout(res, ms)
@@ -188,43 +188,55 @@ export const handlers = [
   }),
   http.get(`${baseUrl}/api/users/:userId/posts`, ({ request, params }) => {
     const { userId } = params
-    return HttpResponse.json([
+
+    const found = User.find(v => v.id === userId)
+
+    if (found) {
+      return HttpResponse.json([
+        {
+          postId: 1,
+          User: found,
+          content: `${1} ${userId}의 게시글`,
+          Images: [{ imageId: 1, link: faker.image.url() }],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 2,
+          User: found,
+          content: `${2} ${userId}의 게시글`,
+          Images: [{ imageId: 1, link: faker.image.url() }],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 3,
+          User: found,
+          content: `${3} ${userId}의 게시글`,
+          Images: [{ imageId: 1, link: faker.image.url() }],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 4,
+          User: found,
+          content: `${4} ${userId}의 게시글`,
+          Images: [{ imageId: 1, link: faker.image.url() }],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 5,
+          User: found,
+          content: `${5} ${userId}의 게시글`,
+          Images: [{ imageId: 1, link: faker.image.url() }],
+          createdAt: generateDate(),
+        },
+      ])
+    }
+
+    return HttpResponse.json(
+      { message: 'no_such_user' },
       {
-        postId: 1,
-        User: User[0],
-        content: `${1} ${userId}의 게시글`,
-        Images: [{ imageId: 1, link: faker.image.url() }],
-        createdAt: generateDate(),
-      },
-      {
-        postId: 2,
-        User: User[0],
-        content: `${2} ${userId}의 게시글`,
-        Images: [{ imageId: 1, link: faker.image.url() }],
-        createdAt: generateDate(),
-      },
-      {
-        postId: 3,
-        User: User[0],
-        content: `${3} ${userId}의 게시글`,
-        Images: [{ imageId: 1, link: faker.image.url() }],
-        createdAt: generateDate(),
-      },
-      {
-        postId: 4,
-        User: User[0],
-        content: `${4} ${userId}의 게시글`,
-        Images: [{ imageId: 1, link: faker.image.url() }],
-        createdAt: generateDate(),
-      },
-      {
-        postId: 5,
-        User: User[0],
-        content: `${5} ${userId}의 게시글`,
-        Images: [{ imageId: 1, link: faker.image.url() }],
-        createdAt: generateDate(),
-      },
-    ])
+        status: 404,
+      }
+    )
   }),
   http.get(
     `${baseUrl}/api/users/:userId`,
@@ -243,10 +255,13 @@ export const handlers = [
     }
   ),
   http.get(
-    `${baseUrl}/api/posts/:postId`,
+    `${baseUrl}/api/users/:userId/posts/:postId`,
     ({ request, params }): StrictResponse<any> => {
-      const { postId } = params
-      if (parseInt(postId as string) > 10) {
+      const { userId, postId } = params
+
+      const found = User.find(v => v.id === userId)
+
+      if (!found || parseInt(postId as string) > 10) {
         return HttpResponse.json(
           { message: 'no_such_post' },
           {
@@ -256,7 +271,7 @@ export const handlers = [
       }
       return HttpResponse.json({
         postId,
-        User: User[0],
+        User: found,
         content: `${1} 게시글 아이디 ${postId}의 내용`,
         Images: [
           { imageId: 1, link: faker.image.url() },
@@ -267,46 +282,49 @@ export const handlers = [
       })
     }
   ),
-  http.get(`${baseUrl}/api/posts/:postId/comments`, ({ request, params }) => {
-    const { postId } = params
-    return HttpResponse.json([
-      {
-        postId: 1,
-        User: User[0],
-        content: `${1} 게시글 ${postId}의 답글`,
-        Images: [{ imageId: 1, link: faker.image.url() }],
-        createdAt: generateDate(),
-      },
-      {
-        postId: 2,
-        User: User[0],
-        content: `${2} 게시글 ${postId}의 답글`,
-        Images: [{ imageId: 1, link: faker.image.url() }],
-        createdAt: generateDate(),
-      },
-      {
-        postId: 3,
-        User: User[0],
-        content: `${3} 게시글 ${postId}의 답글`,
-        Images: [{ imageId: 1, link: faker.image.url() }],
-        createdAt: generateDate(),
-      },
-      {
-        postId: 4,
-        User: User[0],
-        content: `${4} 게시글 ${postId}의 답글`,
-        Images: [{ imageId: 1, link: faker.image.url() }],
-        createdAt: generateDate(),
-      },
-      {
-        postId: 5,
-        User: User[0],
-        content: `${5} 게시글 ${postId}의 답글`,
-        Images: [{ imageId: 1, link: faker.image.url() }],
-        createdAt: generateDate(),
-      },
-    ])
-  }),
+  http.get(
+    `${baseUrl}/api/users/:userId/posts/:postId/comments`,
+    ({ request, params }) => {
+      const { postId } = params
+      return HttpResponse.json([
+        {
+          postId: 1,
+          User: User[0],
+          content: `${1} 게시글 ${postId}의 답글`,
+          Images: [{ imageId: 1, link: faker.image.url() }],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 2,
+          User: User[0],
+          content: `${2} 게시글 ${postId}의 답글`,
+          Images: [{ imageId: 1, link: faker.image.url() }],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 3,
+          User: User[0],
+          content: `${3} 게시글 ${postId}의 답글`,
+          Images: [{ imageId: 1, link: faker.image.url() }],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 4,
+          User: User[0],
+          content: `${4} 게시글 ${postId}의 답글`,
+          Images: [{ imageId: 1, link: faker.image.url() }],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 5,
+          User: User[0],
+          content: `${5} 게시글 ${postId}의 답글`,
+          Images: [{ imageId: 1, link: faker.image.url() }],
+          createdAt: generateDate(),
+        },
+      ])
+    }
+  ),
   http.get(`${baseUrl}/api/followRecommends`, ({ request }) => {
     return HttpResponse.json(User)
   }),
