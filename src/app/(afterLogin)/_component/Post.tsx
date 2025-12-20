@@ -20,14 +20,14 @@ type Props = {
 
 export default function Post({ noImage, post }: Props) {
   const target = post
-  if (Math.random() > 0.5 && !noImage) {
-    target.Images.push(
-      { imageId: 1, link: faker.image.url() },
-      { imageId: 2, link: faker.image.url() },
-      { imageId: 4, link: faker.image.url() },
-      { imageId: 5, link: faker.image.url() }
-    )
-  }
+  // if (Math.random() > 0.5 && !noImage) {
+  //   target.Images.push(
+  //     { imageId: 1, link: faker.image.url() },
+  //     { imageId: 2, link: faker.image.url() },
+  //     { imageId: 4, link: faker.image.url() },
+  //     { imageId: 5, link: faker.image.url() }
+  //   )
+  // }
 
   return (
     <PostArticle post={target}>

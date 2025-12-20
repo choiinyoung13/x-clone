@@ -3,20 +3,19 @@
 import { useSession } from 'next-auth/react'
 import style from './followRecommend.module.css'
 import { redirect } from 'next/navigation'
+import { User } from '@/model/User'
 
-export default function FollowRecommend() {
-  const { data } = useSession()
+interface Props {
+  user: User
+}
+
+export default function FollowRecommend({ user }: Props) {
+  const { data: session } = useSession()
 
   const onFollow = () => {
-    if (!data) {
+    if (!session) {
       redirect('/login')
     }
-  }
-
-  const user = {
-    id: 'elonmusk',
-    nickname: 'Elon Musk',
-    image: '/yRsRRjGO.jpg',
   }
 
   return (

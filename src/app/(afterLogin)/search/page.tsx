@@ -3,6 +3,7 @@ import SearchForm from '@/app/(afterLogin)/_component/SearchForm'
 import { Metadata } from 'next'
 import BackButton from '../_component/BackButton'
 import Tab from './_component/Tab'
+import SearchResult from './_component/SearchResult'
 
 type Props = {
   searchParams: { q: string; f?: string; pf?: string }
@@ -20,7 +21,7 @@ export async function generateMetadata({
 }
 
 export default async function Search({ searchParams }: Props) {
-  const { q } = await searchParams
+  const params = await searchParams
 
   return (
     <main className={style.main}>
@@ -30,13 +31,13 @@ export default async function Search({ searchParams }: Props) {
             <BackButton />
           </div>
           <div className={style.formZone}>
-            <SearchForm q={q} />
+            <SearchForm q={params.q} />
           </div>
         </div>
         <Tab />
       </div>
       <div className={style.list}>
-        {/* <SearchResult searchParams={searchParams} /> */}
+        <SearchResult searchParams={params} />
       </div>
     </main>
   )
