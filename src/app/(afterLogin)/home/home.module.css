@@ -19,3 +19,16 @@
     border-color: rgb(47, 51, 54);
   }
 }
+
+.loader {
+  animation: spinner 1.2s linear infinite;
+}
+
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
