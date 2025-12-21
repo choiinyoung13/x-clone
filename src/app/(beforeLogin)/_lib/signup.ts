@@ -18,7 +18,7 @@ export const signupAction = async (
 
   const id = formData.get('id')
   const password = formData.get('password')
-  const name = formData.get('name')
+  const name = formData.get('nickname')
   const image = formData.get('image')
 
   if (!(image instanceof File) || image.size === 0) {
@@ -50,6 +50,8 @@ export const signupAction = async (
     console.log(response.status)
     if (response.status === 403) {
       return { message: 'user_exists' }
+    } else if (response.status === 400) {
+      return { message: (await response.json()).data[0] }
     }
     console.log(await response.json())
     shouldRedirect = true

@@ -1,18 +1,57 @@
 'use client'
 
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { InfiniteData, useSuspenseInfiniteQuery } from '@tanstack/react-query'
 import Post from '../../_component/Post'
 import type { Post as IPost } from '@/model/Post'
 import { getFollowingPost } from '../_lib/getFollowingPost'
-import styles from '../home.module.css'
+import { useInView } from 'react-intersection-observer'
+import { Fragment } from 'react/jsx-runtime'
+import { useEffect } from 'react'
 
 export default function FollowingPosts() {
-  const { data } = useSuspenseQuery<IPost[]>({
-    queryKey: ['posts', 'followings'],
-    queryFn: getFollowingPost,
-    staleTime: 60 * 1000, // 1분
-    gcTime: 60 * 5000,
+  const { data, fetchNextPage, hasNextPage, isFetching } =
+    useSuspenseInfiniteQuery<
+      IPost[],
+      Object,
+      InfiniteData<IPost[]>,
+      [_1: string, _2: string],
+      number
+    >({
+      queryKey: ['posts', 'followings'],
+      queryFn: getFollowingPost,
+      initialPageParam: 0,
+      getNextPageParam: lastId => {
+        return lastId.at(-1)?.postId
+      },
+      staleTime: 60 * 1000, // 1분
+      gcTime: 60 * 5000,
+    })
+
+  const { ref, inView } = useInView({
+    threshold: 0,
+    delay: 0,
   })
 
-  return data?.map(post => <Post key={post.postId} post={post} />)
+  useEffect(() => {
+    if (inView) {
+      !isFetching && hasNextPage && fetchNextPage()
+    }
+  }, [inView])
+
+  if (!data) {
+    return null
+  }
+
+  return (
+    <>
+      {data.pages.map((page, i) => (
+        <Fragment key={i}>
+          {page.map(post => (
+            <Post key={post.postId} post={post} />
+          ))}
+        </Fragment>
+      ))}
+      <div ref={ref} style={{ height: 50 }}></div>
+    </>
+  )
 }

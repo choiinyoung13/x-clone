@@ -18,11 +18,18 @@ export default function LoginModal() {
     setMessage('')
 
     try {
-      await signIn('credentials', {
+      const result = await signIn('credentials', {
         username: id,
         password,
         redirect: false,
       })
+
+      if (result?.code === 'no_user') {
+        setMessage('가입하지 않은 유저입니다.')
+      } else if (result?.code === 'wrong_password') {
+        setMessage('비밀번호가 틀렸습니다.')
+      }
+
       router.replace('/home')
     } catch (e) {
       console.error(e)

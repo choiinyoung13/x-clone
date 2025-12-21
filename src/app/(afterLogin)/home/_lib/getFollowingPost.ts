@@ -1,8 +1,13 @@
-export async function getFollowingPost() {
+interface Props {
+  pageParam: number
+}
+
+export async function getFollowingPost({ pageParam }: Props) {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/followingPosts`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/followings?cursor=${pageParam}`,
     {
       next: { tags: ['posts', 'followings'] },
+      credentials: 'include',
     }
   )
 

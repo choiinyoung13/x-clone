@@ -1,6 +1,6 @@
 export async function getFollowingRecommends() {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/followRecommends`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/followRecommends`,
     {
       next: { tags: ['users', 'followRecommends'] },
     }

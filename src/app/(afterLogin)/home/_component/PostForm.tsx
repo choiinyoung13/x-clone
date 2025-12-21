@@ -2,12 +2,14 @@
 
 import { ChangeEventHandler, useRef } from 'react'
 import style from './postForm.module.css'
-import { useSession } from 'next-auth/react'
+import { Session } from 'next-auth'
 
-export default function PostForm() {
+interface Props {
+  me: Session
+}
+
+export default function PostForm({ me }: Props) {
   const imageRef = useRef<HTMLInputElement>(null)
-
-  const { data: me } = useSession()
 
   const onChange: ChangeEventHandler<HTMLTextAreaElement> = e => {}
 
