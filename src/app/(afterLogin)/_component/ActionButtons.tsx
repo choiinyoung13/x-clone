@@ -11,6 +11,7 @@ import { addHeart } from '../_lib/addHeart'
 import { Post } from '@/model/Post'
 import { deleteHeart } from '../_lib/deleteHeart'
 import { useSession } from 'next-auth/react'
+import { produce } from 'immer'
 
 type Props = {
   white?: boolean
@@ -32,103 +33,69 @@ export default function ActionButtons({ white, post }: Props) {
 
   const queryClient = useQueryClient()
   const { postId } = post
+  const userEmail = session?.user?.email
+
+  const updatePostInCache = (
+    addHeart: boolean,
+    queryKey: readonly unknown[],
+    value: Post | InfiniteData<Post[]> | undefined
+  ) => {
+    if (!value) return
+
+    const newValue = produce(value, draft => {
+      if ('pages' in draft) {
+        // InfiniteData인 경우
+        const post = draft.pages.flat().find(p => p.postId === postId)
+        if (post) {
+          if (addHeart) {
+            // 이미 좋아요가 있는지 확인
+            if (!post.Hearts.some(h => h.userId === userEmail)) {
+              post.Hearts.push({ userId: userEmail as string })
+            }
+          } else {
+            post.Hearts = post.Hearts.filter(h => h.userId !== userEmail)
+          }
+        }
+      } else if ('postId' in draft && draft.postId === postId) {
+        // 단일 Post인 경우
+        if (addHeart) {
+          if (!draft.Hearts.some(h => h.userId === userEmail)) {
+            draft.Hearts.push({ userId: userEmail as string })
+          }
+        } else {
+          draft.Hearts = draft.Hearts.filter(h => h.userId !== userEmail)
+        }
+      }
+    })
+
+    queryClient.setQueryData(queryKey, newValue)
+  }
 
   const heart = useMutation({
     mutationFn: () => addHeart(postId),
     onMutate() {
       const queryCache = queryClient.getQueryCache()
       const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
-      console.log('queryKeys', queryKeys)
+
       queryKeys.forEach(queryKey => {
         if (queryKey[0] === 'posts') {
-          console.log(queryKey[0])
-          const value: Post | InfiniteData<Post[]> | undefined =
-            queryClient.getQueryData(queryKey)
-          if (value && 'pages' in value) {
-            console.log('array', value)
-            const obj = value.pages.flat().find(v => v.postId === postId)
-            if (obj) {
-              // 존재는 하는지
-              const pageIndex = value.pages.findIndex(page =>
-                page.includes(obj)
-              )
-              const index = value.pages[pageIndex].findIndex(
-                v => v.postId === postId
-              )
-              console.log('found index', index)
-              const shallow = { ...value }
-              value.pages = { ...value.pages }
-              value.pages[pageIndex] = [...value.pages[pageIndex]]
-              shallow.pages[pageIndex][index] = {
-                ...shallow.pages[pageIndex][index],
-                Hearts: [{ userId: session?.user?.email as string }],
-                _count: {
-                  ...shallow.pages[pageIndex][index]._count,
-                },
-              }
-              queryClient.setQueryData(queryKey, shallow)
-            }
-          } else if (value && (value as Post).postId !== undefined) {
-            // 싱글 포스트인 경우
-            const singlePost = value as Post
-            if (singlePost.postId === postId) {
-              const shallow = {
-                ...singlePost,
-                Hearts: [{ userId: session?.user?.email as string }],
-              }
-              queryClient.setQueryData(queryKey, shallow)
-            }
-          }
+          const value = queryClient.getQueryData<Post | InfiniteData<Post[]>>(
+            queryKey
+          )
+          updatePostInCache(true, queryKey, value)
         }
       })
     },
     onError() {
       const queryCache = queryClient.getQueryCache()
       const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
-      console.log('queryKeys', queryKeys)
+
       queryKeys.forEach(queryKey => {
         if (queryKey[0] === 'posts') {
-          const value: Post | InfiniteData<Post[]> | undefined =
-            queryClient.getQueryData(queryKey)
-          if (value && 'pages' in value) {
-            console.log('array', value)
-            const obj = value.pages.flat().find(v => v.postId === postId)
-            if (obj) {
-              // 존재는 하는지
-              const pageIndex = value.pages.findIndex(page =>
-                page.includes(obj)
-              )
-              const index = value.pages[pageIndex].findIndex(
-                v => v.postId === postId
-              )
-              console.log('found index', index)
-              const shallow = { ...value }
-              value.pages = { ...value.pages }
-              value.pages[pageIndex] = [...value.pages[pageIndex]]
-              shallow.pages[pageIndex][index] = {
-                ...shallow.pages[pageIndex][index],
-                Hearts: shallow.pages[pageIndex][index].Hearts.filter(
-                  v => v.userId !== session?.user?.email
-                ),
-                _count: {
-                  ...shallow.pages[pageIndex][index]._count,
-                },
-              }
-              queryClient.setQueryData(queryKey, shallow)
-            }
-          } else if (value && (value as Post).postId !== undefined) {
-            // 싱글 포스트인 경우
-            const singlePost = value as Post
-            if (singlePost.postId === postId) {
-              const shallow = {
-                ...singlePost,
-                Hearts: singlePost.Hearts.filter(
-                  v => v.userId !== session?.user?.email
-                ),
-              }
-              queryClient.setQueryData(queryKey, shallow)
-            }
-          }
+          const value = queryClient.getQueryData<Post | InfiniteData<Post[]>>(
+            queryKey
+          )
+          updatePostInCache(false, queryKey, value)
         }
       })
     },
@@ -144,107 +111,26 @@ export default function ActionButtons({ white, post }: Props) {
     onMutate() {
       const queryCache = queryClient.getQueryCache()
       const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
-      console.log('queryKeys', queryKeys)
+
       queryKeys.forEach(queryKey => {
         if (queryKey[0] === 'posts') {
-          const value: Post | InfiniteData<Post[]> | undefined =
-            queryClient.getQueryData(queryKey)
-          if (value && 'pages' in value) {
-            console.log('array', value)
-            const obj = value.pages.flat().find(v => v.postId === postId)
-            if (obj) {
-              // 존재는 하는지
-              const pageIndex = value.pages.findIndex(page =>
-                page.includes(obj)
-              )
-              const index = value.pages[pageIndex].findIndex(
-                v => v.postId === postId
-              )
-              console.log('found index', index)
-              const shallow = { ...value }
-              value.pages = { ...value.pages }
-              value.pages[pageIndex] = [...value.pages[pageIndex]]
-              shallow.pages[pageIndex][index] = {
-                ...shallow.pages[pageIndex][index],
-                Hearts: shallow.pages[pageIndex][index].Hearts.filter(
-                  v => v.userId !== session?.user?.email
-                ),
-              }
-              queryClient.setQueryData(queryKey, shallow)
-            }
-          } else if (
-            value &&
-            typeof value === 'object' &&
-            'postId' in value &&
-            'Hearts' in value &&
-            Array.isArray(value.Hearts) &&
-            '_count' in value &&
-            typeof value._count === 'object' &&
-            value._count !== null
-          ) {
-            // 싱글 포스트인 경우
-            if (value.postId === postId) {
-              const shallow = {
-                ...value,
-                Hearts: value.Hearts.filter(
-                  (v: { userId: string }) => v.userId !== session?.user?.email
-                ),
-              }
-              queryClient.setQueryData(queryKey, shallow)
-            }
-          }
+          const value = queryClient.getQueryData<Post | InfiniteData<Post[]>>(
+            queryKey
+          )
+          updatePostInCache(false, queryKey, value)
         }
       })
     },
     onError() {
       const queryCache = queryClient.getQueryCache()
       const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
-      console.log('queryKeys', queryKeys)
+
       queryKeys.forEach(queryKey => {
         if (queryKey[0] === 'posts') {
-          console.log(queryKey[0])
-          const value: Post | InfiniteData<Post[]> | undefined =
-            queryClient.getQueryData(queryKey)
-          if (value && 'pages' in value) {
-            console.log('array', value)
-            const obj = value.pages.flat().find(v => v.postId === postId)
-            if (obj) {
-              // 존재는 하는지
-              const pageIndex = value.pages.findIndex(page =>
-                page.includes(obj)
-              )
-              const index = value.pages[pageIndex].findIndex(
-                v => v.postId === postId
-              )
-              console.log('found index', index)
-              const shallow = { ...value }
-              value.pages = { ...value.pages }
-              value.pages[pageIndex] = [...value.pages[pageIndex]]
-              shallow.pages[pageIndex][index] = {
-                ...shallow.pages[pageIndex][index],
-                Hearts: [{ userId: session?.user?.email as string }],
-              }
-              queryClient.setQueryData(queryKey, shallow)
-            }
-          } else if (
-            value &&
-            typeof value === 'object' &&
-            'postId' in value &&
-            'Hearts' in value &&
-            Array.isArray(value.Hearts) &&
-            '_count' in value &&
-            typeof value._count === 'object' &&
-            value._count !== null
-          ) {
-            // 싱글 포스트인 경우
-            if (value.postId === postId) {
-              const shallow = {
-                ...value,
-                Hearts: [{ userId: session?.user?.email as string }],
-              }
-              queryClient.setQueryData(queryKey, shallow)
-            }
-          }
+          const value = queryClient.getQueryData<Post | InfiniteData<Post[]>>(
+            queryKey
+          )
+          updatePostInCache(true, queryKey, value)
         }
       })
     },
