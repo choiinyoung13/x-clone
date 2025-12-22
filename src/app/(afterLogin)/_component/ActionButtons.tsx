@@ -1,20 +1,266 @@
 'use client'
+import {
+  InfiniteData,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query'
 import style from './post.module.css'
 import cx from 'classnames'
 import { MouseEventHandler } from 'react'
+import { addHeart } from '../_lib/addHeart'
+import { Post } from '@/model/Post'
+import { deleteHeart } from '../_lib/deleteHeart'
+import { useSession } from 'next-auth/react'
 
 type Props = {
   white?: boolean
+  post: Post
 }
 
-export default function ActionButtons({ white }: Props) {
-  const commented = true
-  const reposted = true
-  const liked = false
+export default function ActionButtons({ white, post }: Props) {
+  const { data: session } = useSession()
 
-  const onClickComment: MouseEventHandler<HTMLButtonElement> = e => {}
-  const onClickRepost: MouseEventHandler<HTMLButtonElement> = e => {}
-  const onClickHeart: MouseEventHandler<HTMLButtonElement> = e => {}
+  const commented = !!post.Comments?.find(
+    heart => heart.userId === session?.user?.email
+  )
+  const reposted = !!post.Reports?.find(
+    heart => heart.userId === session?.user?.email
+  )
+  const liked = !!post.Hearts?.find(
+    heart => heart.userId === session?.user?.email
+  )
+
+  const queryClient = useQueryClient()
+  const { postId } = post
+
+  const heart = useMutation({
+    mutationFn: () => addHeart(postId),
+    onMutate() {
+      const queryCache = queryClient.getQueryCache()
+      const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
+      console.log('queryKeys', queryKeys)
+      queryKeys.forEach(queryKey => {
+        if (queryKey[0] === 'posts') {
+          console.log(queryKey[0])
+          const value: Post | InfiniteData<Post[]> | undefined =
+            queryClient.getQueryData(queryKey)
+          if (value && 'pages' in value) {
+            console.log('array', value)
+            const obj = value.pages.flat().find(v => v.postId === postId)
+            if (obj) {
+              // 존재는 하는지
+              const pageIndex = value.pages.findIndex(page =>
+                page.includes(obj)
+              )
+              const index = value.pages[pageIndex].findIndex(
+                v => v.postId === postId
+              )
+              console.log('found index', index)
+              const shallow = { ...value }
+              value.pages = { ...value.pages }
+              value.pages[pageIndex] = [...value.pages[pageIndex]]
+              shallow.pages[pageIndex][index] = {
+                ...shallow.pages[pageIndex][index],
+                Hearts: [{ userId: session?.user?.email as string }],
+                _count: {
+                  ...shallow.pages[pageIndex][index]._count,
+                },
+              }
+              queryClient.setQueryData(queryKey, shallow)
+            }
+          } else if (value && (value as Post).postId !== undefined) {
+            // 싱글 포스트인 경우
+            const singlePost = value as Post
+            if (singlePost.postId === postId) {
+              const shallow = {
+                ...singlePost,
+                Hearts: [{ userId: session?.user?.email as string }],
+              }
+              queryClient.setQueryData(queryKey, shallow)
+            }
+          }
+        }
+      })
+    },
+    onError() {
+      const queryCache = queryClient.getQueryCache()
+      const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
+      console.log('queryKeys', queryKeys)
+      queryKeys.forEach(queryKey => {
+        if (queryKey[0] === 'posts') {
+          const value: Post | InfiniteData<Post[]> | undefined =
+            queryClient.getQueryData(queryKey)
+          if (value && 'pages' in value) {
+            console.log('array', value)
+            const obj = value.pages.flat().find(v => v.postId === postId)
+            if (obj) {
+              // 존재는 하는지
+              const pageIndex = value.pages.findIndex(page =>
+                page.includes(obj)
+              )
+              const index = value.pages[pageIndex].findIndex(
+                v => v.postId === postId
+              )
+              console.log('found index', index)
+              const shallow = { ...value }
+              value.pages = { ...value.pages }
+              value.pages[pageIndex] = [...value.pages[pageIndex]]
+              shallow.pages[pageIndex][index] = {
+                ...shallow.pages[pageIndex][index],
+                Hearts: shallow.pages[pageIndex][index].Hearts.filter(
+                  v => v.userId !== session?.user?.email
+                ),
+                _count: {
+                  ...shallow.pages[pageIndex][index]._count,
+                },
+              }
+              queryClient.setQueryData(queryKey, shallow)
+            }
+          } else if (value && (value as Post).postId !== undefined) {
+            // 싱글 포스트인 경우
+            const singlePost = value as Post
+            if (singlePost.postId === postId) {
+              const shallow = {
+                ...singlePost,
+                Hearts: singlePost.Hearts.filter(
+                  v => v.userId !== session?.user?.email
+                ),
+              }
+              queryClient.setQueryData(queryKey, shallow)
+            }
+          }
+        }
+      })
+    },
+    onSettled() {
+      // queryClient.invalidateQueries({
+      //   queryKey: ['posts']
+      // })
+    },
+  })
+
+  const unheart = useMutation({
+    mutationFn: () => deleteHeart(postId),
+    onMutate() {
+      const queryCache = queryClient.getQueryCache()
+      const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
+      console.log('queryKeys', queryKeys)
+      queryKeys.forEach(queryKey => {
+        if (queryKey[0] === 'posts') {
+          const value: Post | InfiniteData<Post[]> | undefined =
+            queryClient.getQueryData(queryKey)
+          if (value && 'pages' in value) {
+            console.log('array', value)
+            const obj = value.pages.flat().find(v => v.postId === postId)
+            if (obj) {
+              // 존재는 하는지
+              const pageIndex = value.pages.findIndex(page =>
+                page.includes(obj)
+              )
+              const index = value.pages[pageIndex].findIndex(
+                v => v.postId === postId
+              )
+              console.log('found index', index)
+              const shallow = { ...value }
+              value.pages = { ...value.pages }
+              value.pages[pageIndex] = [...value.pages[pageIndex]]
+              shallow.pages[pageIndex][index] = {
+                ...shallow.pages[pageIndex][index],
+                Hearts: shallow.pages[pageIndex][index].Hearts.filter(
+                  v => v.userId !== session?.user?.email
+                ),
+              }
+              queryClient.setQueryData(queryKey, shallow)
+            }
+          } else if (
+            value &&
+            typeof value === 'object' &&
+            'postId' in value &&
+            'Hearts' in value &&
+            Array.isArray(value.Hearts) &&
+            '_count' in value &&
+            typeof value._count === 'object' &&
+            value._count !== null
+          ) {
+            // 싱글 포스트인 경우
+            if (value.postId === postId) {
+              const shallow = {
+                ...value,
+                Hearts: value.Hearts.filter(
+                  (v: { userId: string }) => v.userId !== session?.user?.email
+                ),
+              }
+              queryClient.setQueryData(queryKey, shallow)
+            }
+          }
+        }
+      })
+    },
+    onError() {
+      const queryCache = queryClient.getQueryCache()
+      const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
+      console.log('queryKeys', queryKeys)
+      queryKeys.forEach(queryKey => {
+        if (queryKey[0] === 'posts') {
+          console.log(queryKey[0])
+          const value: Post | InfiniteData<Post[]> | undefined =
+            queryClient.getQueryData(queryKey)
+          if (value && 'pages' in value) {
+            console.log('array', value)
+            const obj = value.pages.flat().find(v => v.postId === postId)
+            if (obj) {
+              // 존재는 하는지
+              const pageIndex = value.pages.findIndex(page =>
+                page.includes(obj)
+              )
+              const index = value.pages[pageIndex].findIndex(
+                v => v.postId === postId
+              )
+              console.log('found index', index)
+              const shallow = { ...value }
+              value.pages = { ...value.pages }
+              value.pages[pageIndex] = [...value.pages[pageIndex]]
+              shallow.pages[pageIndex][index] = {
+                ...shallow.pages[pageIndex][index],
+                Hearts: [{ userId: session?.user?.email as string }],
+              }
+              queryClient.setQueryData(queryKey, shallow)
+            }
+          } else if (
+            value &&
+            typeof value === 'object' &&
+            'postId' in value &&
+            'Hearts' in value &&
+            Array.isArray(value.Hearts) &&
+            '_count' in value &&
+            typeof value._count === 'object' &&
+            value._count !== null
+          ) {
+            // 싱글 포스트인 경우
+            if (value.postId === postId) {
+              const shallow = {
+                ...value,
+                Hearts: [{ userId: session?.user?.email as string }],
+              }
+              queryClient.setQueryData(queryKey, shallow)
+            }
+          }
+        }
+      })
+    },
+    onSettled() {},
+  })
+
+  const onClickComment: MouseEventHandler<HTMLButtonElement> = e => {
+    e.stopPropagation()
+  }
+  const onClickRepost: MouseEventHandler<HTMLButtonElement> = e => {
+    e.stopPropagation()
+  }
+  const onClickHeart: MouseEventHandler<HTMLButtonElement> = e => {
+    e.stopPropagation()
+    liked ? unheart.mutate() : heart.mutate()
+  }
 
   return (
     <div className={style.actionButtons}>
@@ -32,7 +278,7 @@ export default function ActionButtons({ white }: Props) {
             </g>
           </svg>
         </button>
-        <div className={style.count}>{1 || ''}</div>
+        <div className={style.count}>{post.Comments?.length || ''}</div>
       </div>
       <div
         className={cx(
@@ -48,7 +294,7 @@ export default function ActionButtons({ white }: Props) {
             </g>
           </svg>
         </button>
-        <div className={style.count}>{1 || ''}</div>
+        <div className={style.count}>{post.Reports?.length || ''}</div>
       </div>
       <div
         className={cx([
@@ -64,7 +310,7 @@ export default function ActionButtons({ white }: Props) {
             </g>
           </svg>
         </button>
-        <div className={style.count}>{0 || ''}</div>
+        <div className={style.count}>{post.Hearts?.length || ''}</div>
       </div>
     </div>
   )

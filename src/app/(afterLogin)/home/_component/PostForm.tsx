@@ -1,8 +1,16 @@
 'use client'
 
-import { ChangeEventHandler, useRef } from 'react'
+import {
+  ChangeEventHandler,
+  FormEventHandler,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import style from './postForm.module.css'
 import { Session } from 'next-auth'
+import TextareaAutosize from 'react-textarea-autosize'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface Props {
   me: Session
@@ -10,27 +18,97 @@ interface Props {
 
 export default function PostForm({ me }: Props) {
   const imageRef = useRef<HTMLInputElement>(null)
+  const [preview, setPreview] = useState<Array<{ url: string; file: File }>>([])
+  const [content, setContent] = useState('')
+  const queryClient = useQueryClient()
 
-  const onChange: ChangeEventHandler<HTMLTextAreaElement> = e => {}
+  useEffect(() => {
+    return () => {
+      preview.forEach(item => URL.revokeObjectURL(item.url))
+    }
+  }, [])
+
+  const onChange: ChangeEventHandler<HTMLTextAreaElement> = e => {
+    setContent(e.target.value)
+  }
 
   const onClickButton = () => {
     imageRef.current?.click()
   }
 
-  const onRemoveImage = (index: number) => () => {}
+  const onRemoveImage = (index: number) => () => {
+    setPreview(prev => prev.filter((_, i) => i !== index))
+  }
 
-  const onUpload: ChangeEventHandler<HTMLInputElement> = e => {}
+  const onUpload: ChangeEventHandler<HTMLInputElement> = e => {
+    e.preventDefault()
+
+    if (!e.target.files) return
+
+    const files = Array.from(e.target.files)
+
+    if (files.length > 4) {
+      alert('이미지는 최대 4개까지만 업로드할 수 있습니다.')
+      e.target.value = '' // input 초기화
+      return
+    }
+    preview?.forEach(item => URL.revokeObjectURL(item.url))
+    const updated = files.map(file => {
+      const url = URL.createObjectURL(file)
+      return { url, file }
+    })
+
+    setPreview(updated)
+  }
+
+  const onSubmit: FormEventHandler = async e => {
+    e.preventDefault()
+    const formData = new FormData()
+
+    formData.append('content', content)
+    preview.forEach(p => {
+      p && formData.append('images', p.file)
+    })
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`, {
+        method: 'post',
+        body: formData,
+        credentials: 'include',
+      })
+
+      if (res.status === 201) {
+        setPreview([])
+        setContent('')
+        queryClient.invalidateQueries({ queryKey: ['posts', 'recommends'] })
+        queryClient.invalidateQueries({ queryKey: ['posts', 'followings'] })
+        queryClient.invalidateQueries({ queryKey: ['trends'] })
+      }
+    } catch {
+      alert('게시물 업로드 중 에러가 발생했습니다')
+    }
+  }
 
   return (
-    <form className={style.postForm}>
+    <form className={style.postForm} onSubmit={onSubmit}>
       <div className={style.postUserSection}>
         <div className={style.postUserImage}>
           <img src={me?.user.image} alt={me?.user.name} />
         </div>
       </div>
       <div className={style.postInputSection}>
-        <div style={{ display: 'flex' }}>
-          <textarea name="" placeholder="무슨 일이 일어나고 있나요?"></textarea>
+        <TextareaAutosize
+          id="content"
+          name="content"
+          placeholder="무슨 일이 일어나고 있나요?"
+          value={content}
+          onChange={onChange}
+        ></TextareaAutosize>
+        <div className={style.previewSection}>
+          {preview.length > 0 &&
+            preview.map((image, i) => {
+              return <img key={i} src={image.url} onClick={onRemoveImage(i)} />
+            })}
         </div>
         <div className={style.postButtonSection}>
           <div className={style.footerButtons}>
@@ -42,6 +120,7 @@ export default function PostForm({ me }: Props) {
                 hidden
                 onChange={onUpload}
                 ref={imageRef}
+                accept="image/*"
               />
               <button
                 className={style.uploadButton}

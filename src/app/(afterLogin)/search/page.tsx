@@ -4,6 +4,8 @@ import { Metadata } from 'next'
 import BackButton from '../_component/BackButton'
 import Tab from './_component/Tab'
 import SearchResult from './_component/SearchResult'
+import { Suspense } from 'react'
+import Loading from '../home/loading'
 
 type Props = {
   searchParams: { q: string; f?: string; pf?: string }
@@ -37,7 +39,9 @@ export default async function Search({ searchParams }: Props) {
         <Tab />
       </div>
       <div className={style.list}>
-        <SearchResult searchParams={params} />
+        <Suspense fallback={<Loading />}>
+          <SearchResult searchParams={params} />
+        </Suspense>
       </div>
     </main>
   )

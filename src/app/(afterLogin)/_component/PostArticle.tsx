@@ -3,20 +3,11 @@
 import { ReactNode } from 'react'
 import style from './post.module.css'
 import { useRouter } from 'next/navigation'
+import { Post } from '@/model/Post'
 
 type props = {
   children: ReactNode
-  post: {
-    postId: number
-    User: {
-      id: string
-      nickname: string
-      image: string
-    }
-    content: string
-    createdAt: Date
-    Images: any[]
-  }
+  post: Post
 }
 
 export default function PostArticle({ children, post }: props) {
@@ -27,7 +18,7 @@ export default function PostArticle({ children, post }: props) {
   }
 
   return (
-    <article onClickCapture={handelClick} className={style.post}>
+    <article onClick={handelClick} className={style.post}>
       {children}
     </article>
   )

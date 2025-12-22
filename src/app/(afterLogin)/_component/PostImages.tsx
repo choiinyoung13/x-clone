@@ -1,19 +1,10 @@
 import Link from 'next/link'
 import style from '@/app/(afterLogin)/_component/post.module.css'
 import cx from 'classnames'
+import { Post } from '@/model/Post'
 
 type Props = {
-  post: {
-    postId: number
-    content: string
-    User: {
-      id: string
-      nickname: string
-      image: string
-    }
-    createdAt: Date
-    Images: any[]
-  }
+  post: Post
 }
 
 export default function PostImages({ post }: Props) {
@@ -28,6 +19,7 @@ export default function PostImages({ post }: Props) {
           backgroundImage: `url(${post.Images[0]?.link})`,
           backgroundSize: 'contain',
         }}
+        onClick={e => e.stopPropagation()}
       >
         <img src={post.Images[0]?.link} alt="" />
       </Link>
@@ -42,6 +34,7 @@ export default function PostImages({ post }: Props) {
             backgroundImage: `url(${post.Images[0]?.link})`,
             backgroundSize: 'cover',
           }}
+          onClick={e => e.stopPropagation()}
         ></Link>
         <Link
           href={`/${post.User.id}/status/${post.postId}/photo/${post.Images[1].imageId}`}
@@ -49,6 +42,7 @@ export default function PostImages({ post }: Props) {
             backgroundImage: `url(${post.Images[1]?.link})`,
             backgroundSize: 'cover',
           }}
+          onClick={e => e.stopPropagation()}
         ></Link>
       </div>
     )
@@ -62,6 +56,7 @@ export default function PostImages({ post }: Props) {
             backgroundImage: `url(${post.Images[0]?.link})`,
             backgroundSize: 'cover',
           }}
+          onClick={e => e.stopPropagation()}
         ></Link>
         <div>
           <Link
@@ -70,6 +65,7 @@ export default function PostImages({ post }: Props) {
               backgroundImage: `url(${post.Images[1]?.link})`,
               backgroundSize: 'cover',
             }}
+            onClick={e => e.stopPropagation()}
           ></Link>
           <Link
             href={`/${post.User.id}/status/${post.postId}/photo/${post.Images[2].imageId}`}
@@ -77,6 +73,7 @@ export default function PostImages({ post }: Props) {
               backgroundImage: `url(${post.Images[2]?.link})`,
               backgroundSize: 'cover',
             }}
+            onClick={e => e.stopPropagation()}
           ></Link>
         </div>
       </div>
@@ -91,6 +88,7 @@ export default function PostImages({ post }: Props) {
             backgroundImage: `url(${post.Images[0]?.link})`,
             backgroundSize: 'cover',
           }}
+          onClick={e => e.stopPropagation()}
         ></Link>
         <Link
           href={`/${post.User.id}/status/${post.postId}/photo/${post.Images[1].imageId}`}
@@ -98,6 +96,7 @@ export default function PostImages({ post }: Props) {
             backgroundImage: `url(${post.Images[1]?.link})`,
             backgroundSize: 'cover',
           }}
+          onClick={e => e.stopPropagation()}
         ></Link>
         <Link
           href={`/${post.User.id}/status/${post.postId}/photo/${post.Images[2].imageId}`}
@@ -105,6 +104,7 @@ export default function PostImages({ post }: Props) {
             backgroundImage: `url(${post.Images[2]?.link})`,
             backgroundSize: 'cover',
           }}
+          onClick={e => e.stopPropagation()}
         ></Link>
         <Link
           href={`/${post.User.id}/status/${post.postId}/photo/${post.Images[3].imageId}`}
@@ -112,6 +112,7 @@ export default function PostImages({ post }: Props) {
             backgroundImage: `url(${post.Images[3]?.link})`,
             backgroundSize: 'cover',
           }}
+          onClick={e => e.stopPropagation()}
         ></Link>
       </div>
     )

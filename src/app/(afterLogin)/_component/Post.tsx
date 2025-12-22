@@ -64,7 +64,7 @@ export default function Post({ noImage, post }: Props) {
               </div>
             )}
           </div>
-          <ActionButtons />
+          <ActionButtons post={post} />
         </div>
       </div>
     </PostArticle>
