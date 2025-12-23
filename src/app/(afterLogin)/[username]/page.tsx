@@ -7,7 +7,7 @@ import {
 import { getUser } from './_lib/getUser'
 import { getUserPosts } from './_lib/getUserPosts'
 import UserPosts from './_component/UserPosts'
-import User from './_component/UserInfo'
+import UserInfo from './_component/UserInfo'
 
 type Props = {
   params: Promise<{ username: string }>
@@ -31,7 +31,7 @@ export default async function Profile({ params }: Props) {
   return (
     <main className={style.main}>
       <HydrationBoundary state={dehydrateState}>
-        <User username={username} />
+        <UserInfo username={username} />
         <UserPosts username={username} />
       </HydrationBoundary>
     </main>

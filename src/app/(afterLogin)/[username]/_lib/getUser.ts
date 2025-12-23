@@ -10,6 +10,7 @@ export const getUser: QueryFunction<User, [_1: string, _2: string]> = async ({
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${username}`,
     {
       next: { tags: ['user', username] },
+      credentials: 'include',
     }
   )
 

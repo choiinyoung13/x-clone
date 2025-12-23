@@ -47,6 +47,24 @@
   height: 32px;
   border-radius: 16px;
 }
-.followButtonSection button:hover {
+
+.followButtonSection .following {
+  color: #000;
+  background: white;
+  border: 1px solid rgb(220, 220, 220);
+}
+.followButtonSection .following::after {
+  content: '팔로잉';
+}
+.followButtonSection .following:hover::after {
+  content: '언팔로우';
+  color: rgb(255, 50, 50);
+}
+
+.followButtonSection .follow {
+  color: white;
+  background: #000;
+}
+.followButtonSection .follow:hover {
   background-color: rgb(39, 44, 48);
 }

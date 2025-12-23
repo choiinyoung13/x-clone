@@ -6,12 +6,14 @@ import FollowButton from './FollowButton'
 import { useQuery } from '@tanstack/react-query'
 import type { User } from '@/model/User'
 import { getUser } from '../_lib/getUser'
+import { useSession } from 'next-auth/react'
 
 type Props = {
   username: string
 }
 
 export default function UserInfo({ username }: Props) {
+  const { data } = useSession()
   const { data: user, error } = useQuery<
     User,
     Object,
@@ -56,15 +58,26 @@ export default function UserInfo({ username }: Props) {
       </div>
       <div className={style.userZone}>
         <div className={style.userRow}>
-          <div className={style.userImage}>
-            <img src={user.image} alt={user.id} />
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div className={style.userImage}>
+              <img src={user.image} alt={user.id} />
+            </div>
+            <div className={style.userName}>
+              <div>{user.nickname}</div>
+              <div>@{user.id}</div>
+            </div>
           </div>
-          <div className={style.userName}>
-            <div>{user.nickname}</div>
-            <div>@{user.id}</div>
+          {data?.user?.email !== user.id && <FollowButton user={user} />}
+        </div>
+        <div className={style.followInfo}>
+          <div>
+            <span>{user._count.Followers}</span>
+            <span>팔로워</span>
           </div>
-
-          <FollowButton />
+          <div>
+            <span>{user._count.Followings}</span>
+            <span>팔로잉</span>
+          </div>
         </div>
       </div>
     </>
