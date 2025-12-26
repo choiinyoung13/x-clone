@@ -2,27 +2,147 @@
 
 import { useRouter } from 'next/navigation'
 import style from './modal.module.css'
-import { useRef, useState } from 'react'
+import {
+  ChangeEventHandler,
+  FormEvent,
+  FormEventHandler,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { useSession } from 'next-auth/react'
+import { useModalStore } from '@/store/modal'
+import Post from '../../../../(afterLogin)/_component/Post'
+import TextareaAutosize from 'react-textarea-autosize'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export default function TweetModal() {
-  const [content, setContent] = useState()
+  const [content, setContent] = useState('')
   const imageRef = useRef<HTMLInputElement>(null)
+  const [preview, setPreview] = useState<Array<{ url: string; file: File }>>([])
   const router = useRouter()
   const { data: me } = useSession()
+  const modalStore = useModalStore()
+  const queryClient = useQueryClient()
 
-  const onSubmit = () => {}
+  const parent = modalStore.data
+
+  const addPost = useMutation({
+    mutationFn: async (e: FormEvent) => {
+      e.preventDefault()
+      const formData = new FormData()
+
+      formData.append('content', content)
+      preview.forEach(p => {
+        p && formData.append('images', p.file)
+      })
+
+      return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`, {
+        method: 'post',
+        body: formData,
+        credentials: 'include',
+      })
+    },
+    onSuccess: () => {
+      setPreview([])
+      setContent('')
+      queryClient.invalidateQueries({ queryKey: ['posts', 'recommends'] })
+      queryClient.invalidateQueries({ queryKey: ['posts', 'followings'] })
+      queryClient.invalidateQueries({ queryKey: ['trends'] })
+      router.back()
+      modalStore.reset()
+    },
+    onError: () => {
+      alert('게시물 업로드 중 에러가 발생했습니다')
+    },
+  })
+  const comment = useMutation({
+    mutationFn: async (e: FormEvent) => {
+      e.preventDefault()
+      const formData = new FormData()
+
+      formData.append('content', content)
+      preview.forEach(p => {
+        p && formData.append('images', p.file)
+      })
+
+      return fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${parent.postId}/comments`,
+        {
+          method: 'post',
+          body: formData,
+          credentials: 'include',
+        }
+      )
+    },
+    onSuccess: () => {
+      setPreview([])
+      setContent('')
+      queryClient.invalidateQueries({ queryKey: ['posts', 'recommends'] })
+      queryClient.invalidateQueries({ queryKey: ['posts', 'followings'] })
+      queryClient.invalidateQueries({ queryKey: ['trends'] })
+      router.back()
+      modalStore.reset()
+    },
+    onError: () => {
+      alert('게시물 업로드 중 에러가 발생했습니다')
+    },
+  })
+
+  useEffect(() => {
+    return () => {
+      preview.forEach(item => URL.revokeObjectURL(item.url))
+    }
+  }, [])
+
+  const onRemoveImage = (index: number) => () => {
+    setPreview(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const onUpload: ChangeEventHandler<HTMLInputElement> = e => {
+    e.preventDefault()
+
+    if (!e.target.files) return
+
+    const files = Array.from(e.target.files)
+
+    if (files.length > 4) {
+      alert('이미지는 최대 4개까지만 업로드할 수 있습니다.')
+      e.target.value = '' // input 초기화
+      return
+    }
+    preview?.forEach(item => URL.revokeObjectURL(item.url))
+    const updated = files.map(file => {
+      const url = URL.createObjectURL(file)
+      return { url, file }
+    })
+
+    setPreview(updated)
+  }
+
+  const onSubmit: FormEventHandler = async e => {
+    if (modalStore.mode === 'new') {
+      addPost.mutate(e)
+    } else {
+      comment.mutate(e)
+    }
+  }
   const onClickClose = () => {
     router.back()
+    modalStore.reset()
   }
   const onClickButton = () => {
     imageRef.current?.click()
   }
-  const onChangeContent = () => {}
+  const onChangeContent: ChangeEventHandler<HTMLTextAreaElement> = e => {
+    setContent(e.target.value)
+  }
 
   return (
     <div className={style.modalBackground}>
       <div className={style.modal}>
+        {modalStore.mode === 'comment' && <Post post={parent} noImage />}
+
         <button className={style.closeButton} onClick={onClickClose}>
           <svg
             width={24}
@@ -39,16 +159,28 @@ export default function TweetModal() {
           <div className={style.modalBody}>
             <div className={style.postUserSection}>
               <div className={style.postUserImage}>
-                <img src={me.user.image} alt={me.user.id} />
+                <img src={me?.user?.image} alt={me?.user?.id} />
               </div>
             </div>
             <div className={style.inputDiv}>
-              <textarea
+              <TextareaAutosize
                 className={style.input}
-                placeholder="무슨 일이 일어나고 있나요?"
+                placeholder={
+                  modalStore.mode === 'new'
+                    ? '무슨 일이 일어나고 있나요?'
+                    : '답글 게시하기'
+                }
                 value={content}
                 onChange={onChangeContent}
               />
+              <div className={style.previewSection}>
+                {preview.length > 0 &&
+                  preview.map((image, i) => {
+                    return (
+                      <img key={i} src={image.url} onClick={onRemoveImage(i)} />
+                    )
+                  })}
+              </div>
             </div>
           </div>
           <div className={style.modalFooter}>
@@ -60,6 +192,7 @@ export default function TweetModal() {
                   name="imageFiles"
                   multiple
                   hidden
+                  onChange={onUpload}
                   ref={imageRef}
                 />
                 <button

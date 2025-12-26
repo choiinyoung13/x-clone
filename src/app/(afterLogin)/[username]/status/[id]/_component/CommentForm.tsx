@@ -1,32 +1,103 @@
 'use client'
 
-import { ChangeEvent, useRef, useState } from 'react'
+import {
+  ChangeEventHandler,
+  FormEventHandler,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import style from './commentForm.module.css'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
+import { useSession } from 'next-auth/react'
+import TextareaAutosize from 'react-textarea-autosize'
+import { useRouter } from 'next/navigation'
+import { Post } from '@/model/Post'
 
 type Props = {
   id: string
   username: string
 }
-export default function CommentForm({ id, username }: Props) {
-  const user = {
-    id: 'elonmusk',
-    nickname: 'Elon Musk',
-    image: '/yRsRRjGO.jpg',
-  }
-
+export default function CommentForm({ id }: Props) {
+  const { data: session } = useSession()
   const [content, setContent] = useState('')
   const imageRef = useRef<HTMLInputElement>(null)
+  const [preview, setPreview] = useState<Array<{ url: string; file: File }>>([])
   const queryClient = useQueryClient()
-  const post = queryClient.getQueryData(['users', username, 'posts', id])
 
-  const onClickButton = () => {}
-  const onSubmit = () => {}
-  const onChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+  const post = queryClient.getQueryData<Post>(['posts', id])
+
+  useEffect(() => {
+    return () => {
+      preview.forEach(item => URL.revokeObjectURL(item.url))
+    }
+  }, [])
+
+  const onChange: ChangeEventHandler<HTMLTextAreaElement> = e => {
     setContent(e.target.value)
   }
 
-  if (!post) {
+  const onClickButton = () => {
+    imageRef.current?.click()
+  }
+
+  const onRemoveImage = (index: number) => () => {
+    setPreview(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const onUpload: ChangeEventHandler<HTMLInputElement> = e => {
+    e.preventDefault()
+
+    if (!e.target.files) return
+
+    const files = Array.from(e.target.files)
+
+    if (files.length > 4) {
+      alert('이미지는 최대 4개까지만 업로드할 수 있습니다.')
+      e.target.value = '' // input 초기화
+      return
+    }
+    preview?.forEach(item => URL.revokeObjectURL(item.url))
+    const updated = files.map(file => {
+      const url = URL.createObjectURL(file)
+      return { url, file }
+    })
+
+    setPreview(updated)
+  }
+
+  const onSubmit: FormEventHandler = async e => {
+    e.preventDefault()
+    const formData = new FormData()
+
+    formData.append('content', content)
+    preview.forEach(p => {
+      p && formData.append('images', p.file)
+    })
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${id}/comments`,
+        {
+          method: 'post',
+          body: formData,
+          credentials: 'include',
+        }
+      )
+
+      if (res.status === 201) {
+        setPreview([])
+        setContent('')
+        queryClient.invalidateQueries({ queryKey: ['posts'] })
+        queryClient.invalidateQueries({ queryKey: ['comments'] })
+        queryClient.invalidateQueries({ queryKey: ['trends'] })
+      }
+    } catch {
+      alert('게시물 업로드 중 에러가 발생했습니다')
+    }
+  }
+
+  if (!post || post.Parent) {
     return null
   }
 
@@ -34,15 +105,23 @@ export default function CommentForm({ id, username }: Props) {
     <form className={style.postForm} onSubmit={onSubmit}>
       <div className={style.postUserSection}>
         <div className={style.postUserImage}>
-          <img src={user.image} alt={user.nickname} />
+          <img src={session?.user?.image} alt={session?.user?.email} />
         </div>
       </div>
       <div className={style.postInputSection}>
-        <textarea
+        <TextareaAutosize
+          id="content"
+          name="content"
           value={content}
           onChange={onChange}
-          placeholder="답글 게시하기"
+          placeholder={'답글 게시하기'}
         />
+        <div className={style.previewSection}>
+          {preview.length > 0 &&
+            preview.map((image, i) => {
+              return <img key={i} src={image.url} onClick={onRemoveImage(i)} />
+            })}
+        </div>
         <div className={style.postButtonSection}>
           <div className={style.footerButtons}>
             <div className={style.footerButtonLeft}>
@@ -51,7 +130,9 @@ export default function CommentForm({ id, username }: Props) {
                 name="imageFiles"
                 multiple
                 hidden
+                onChange={onUpload}
                 ref={imageRef}
+                accept="image/*"
               />
               <button
                 className={style.uploadButton}
@@ -66,7 +147,7 @@ export default function CommentForm({ id, username }: Props) {
               </button>
             </div>
             <button className={style.actionButton} disabled={!content}>
-              답글
+              게시하기
             </button>
           </div>
         </div>

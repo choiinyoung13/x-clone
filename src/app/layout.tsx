@@ -1,3 +1,4 @@
+import { Metadata } from 'next'
 import AuthSession from './_component/AuthSession'
 import { MSWProvider } from './_component/MSWComponent'
 import './globals.css'
@@ -9,6 +10,11 @@ if (
 ) {
   const { server } = require('@/mocks/http')
   server.listen()
+}
+
+export const metadata: Metadata = {
+  title: 'X. 무슨 일이 일어나고 있나요? / Z',
+  description: 'clone coading X.com',
 }
 
 export default function RootLayout({

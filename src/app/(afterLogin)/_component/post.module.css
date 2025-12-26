@@ -21,9 +21,10 @@
   display: flex;
   align-items: center;
   color: rgb(83, 100, 113);
-  margin-left: 24px;
+  margin-bottom: 10px;
   font-size: 13px;
   line-height: 20px;
+  gap: 4px;
 }
 .postReposted svg {
   fill: rgb(83, 100, 113);

@@ -7,9 +7,26 @@ import {
   HydrationBoundary,
   QueryClient,
 } from '@tanstack/react-query'
-import { getPostById } from './_lib/getPostById'
 import { getCommentsById } from './_lib/getCommentsById'
 import Comments from './_component/Comments'
+
+import { User } from '@/model/User'
+import { Post } from '@/model/Post'
+import { getUserServer } from '@/app/(afterLogin)/[username]/_lib/getUserServer'
+import { Metadata } from 'next'
+import { getPostByIdServer } from './_lib/getPostByIdServer'
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { username, id } = await params
+  const [user, post]: [User, Post] = await Promise.all([
+    getUserServer({ queryKey: ['users', username] }),
+    getPostByIdServer({ queryKey: ['posts', id] }),
+  ])
+  return {
+    title: `Z에서 ${user.nickname} 님 : ${post.content}`,
+    description: post.content,
+  }
+}
 
 type Props = {
   params: Promise<{ id: string; username: string }>
@@ -20,12 +37,13 @@ export default async function Page({ params }: Props) {
 
   const queryClient = new QueryClient()
   await queryClient.prefetchQuery({
-    queryKey: ['users', username, 'posts', id],
-    queryFn: getPostById,
+    queryKey: ['posts', id],
+    queryFn: getPostByIdServer,
   })
-  await queryClient.prefetchQuery({
-    queryKey: ['users', username, 'posts', id, 'comments'],
+  await queryClient.prefetchInfiniteQuery({
+    queryKey: ['posts', id, 'comments'],
     queryFn: getCommentsById,
+    initialPageParam: 0,
   })
   const dehydrateState = dehydrate(queryClient)
 
@@ -39,7 +57,7 @@ export default async function Page({ params }: Props) {
       </div>
       <div style={{ marginTop: 53 }}>
         <HydrationBoundary state={dehydrateState}>
-          <SinglePost id={id} username={username} />
+          <SinglePost id={id} />
           <CommentForm id={id} username={username} />
           <Comments id={id} username={username} />
         </HydrationBoundary>

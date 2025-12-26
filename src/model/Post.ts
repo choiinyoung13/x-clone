@@ -9,10 +9,13 @@ export interface Post {
   deletedAt: string
   User: User
   Images: PostImage[]
+  heartCount: number
+  repostCount: number
+  commentCount: number
   Hearts: { userId: string }[]
-  Reports: { userId: string }[]
+  Reposts: { userId: string }[]
   Comments: { userId: string }[]
   _count: { Followers: number; Followings: number }
-  Parent: string
-  Original: string
+  Parent?: Post
+  Original?: Post
 }

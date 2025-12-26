@@ -97,6 +97,7 @@
   max-height: 300px;
   overflow: hidden;
   margin-bottom: 10px;
+  border-radius: 16px;
 }
 
 .previewSection img {

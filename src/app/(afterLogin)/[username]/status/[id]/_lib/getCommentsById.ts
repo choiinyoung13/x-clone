@@ -3,14 +3,14 @@ import { QueryFunction } from '@tanstack/react-query'
 
 export const getCommentsById: QueryFunction<
   Post[],
-  [_1: string, string, _3: string, string, _5: string]
-> = async ({ queryKey }) => {
-  const [_1, username, _3, id, _5] = queryKey
+  [_1: string, string, _3: string]
+> = async ({ queryKey, pageParam }) => {
+  const [_1, id, _3] = queryKey
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${username}/posts/${id}/comments`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${id}/comments?cursor=${pageParam}`,
     {
-      next: { tags: ['users', username, 'posts', id, 'comments'] },
+      next: { tags: ['posts', id, 'comments'] },
     }
   )
 

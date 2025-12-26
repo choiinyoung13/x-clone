@@ -4,13 +4,28 @@ import {
   HydrationBoundary,
   QueryClient,
 } from '@tanstack/react-query'
-import { getUser } from './_lib/getUser'
+
 import { getUserPosts } from './_lib/getUserPosts'
 import UserPosts from './_component/UserPosts'
 import UserInfo from './_component/UserInfo'
+import { getUserServer } from './_lib/getUserServer'
+import { Metadata } from 'next'
+import { User } from '@/model/User'
 
 type Props = {
-  params: Promise<{ username: string }>
+  params?: Promise<{ username: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { username } = await params
+  const user: User = await getUserServer({
+    queryKey: ['users', username],
+  })
+
+  return {
+    title: `${user.nickname} (${user.id}) / Z`,
+    description: `${user.nickname} (${user.id}) 프로필 / Z`,
+  }
 }
 
 export default async function Profile({ params }: Props) {
@@ -19,7 +34,7 @@ export default async function Profile({ params }: Props) {
 
   await queryClient.prefetchQuery({
     queryKey: ['users', username],
-    queryFn: getUser,
+    queryFn: getUserServer,
   })
   await queryClient.prefetchQuery({
     queryKey: ['posts', 'users', username],

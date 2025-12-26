@@ -1,6 +1,6 @@
-export const deleteHeart = async (id: number) => {
+export const deleteRepost = async (id: number) => {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${id}/heart`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${id}/reposts`,
     {
       method: 'delete',
       credentials: 'include',
@@ -11,5 +11,5 @@ export const deleteHeart = async (id: number) => {
     throw new Error('Failed to fetch data')
   }
 
-  return res.json()
+  return res.text()
 }

@@ -83,6 +83,9 @@ export default function FollowRecommend({ user }: Props) {
         })
       }
     },
+    onSuccess: () => {
+      qeueyClient.invalidateQueries({ queryKey: ['posts'] })
+    },
   })
 
   const unfollow = useMutation({
@@ -150,6 +153,9 @@ export default function FollowRecommend({ user }: Props) {
           return updated
         })
       }
+    },
+    onSuccess: () => {
+      qeueyClient.invalidateQueries({ queryKey: ['posts'] })
     },
   })
 

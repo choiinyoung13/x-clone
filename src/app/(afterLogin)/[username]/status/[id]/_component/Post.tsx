@@ -7,18 +7,18 @@ import { getPostById } from '../_lib/getPostById'
 
 interface Props {
   id: string
-  username: string
+
   noImage?: boolean
 }
 
-export default function SinglePost({ noImage, id, username }: Props) {
+export default function SinglePost({ noImage, id }: Props) {
   const { data: post, error } = useQuery<
     IPost,
     Object,
     IPost,
-    [_1: string, string, _3: string, string]
+    [_1: string, string]
   >({
-    queryKey: ['users', username, 'posts', id],
+    queryKey: ['posts', id],
     queryFn: getPostById,
     staleTime: 60 * 1000, // 1분
     gcTime: 60 * 5000,
@@ -36,5 +36,7 @@ export default function SinglePost({ noImage, id, username }: Props) {
     return null
   }
 
-  return <Post noImage={noImage} post={post} />
+  return (
+    <Post noImage={noImage} post={post} noAction={post.Parent ? true : false} />
+  )
 }

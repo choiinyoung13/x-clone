@@ -134,7 +134,9 @@ export default function PostForm({ me }: Props) {
                 </svg>
               </button>
             </div>
-            <button className={style.actionButton}>게시하기</button>
+            <button className={style.actionButton} disabled={!content}>
+              게시하기
+            </button>
           </div>
         </div>
       </div>

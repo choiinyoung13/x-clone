@@ -12,21 +12,26 @@ import { Post } from '@/model/Post'
 import { deleteHeart } from '../_lib/deleteHeart'
 import { useSession } from 'next-auth/react'
 import { produce } from 'immer'
+import { addRepost } from '../_lib/addRepost'
+import { deleteRepost } from '../_lib/deleteRepost'
+import { useRouter } from 'next/navigation'
+import { useModalStore } from '@/store/modal'
 
 type Props = {
   white?: boolean
   post: Post
+  noAction?: boolean
 }
 
-export default function ActionButtons({ white, post }: Props) {
+export default function ActionButtons({ white, post, noAction }: Props) {
   const { data: session } = useSession()
+  const modalStore = useModalStore()
+  const router = useRouter()
 
-  const commented = !!post.Comments?.find(
+  const reposted = !!post.Reposts?.find(
     heart => heart.userId === session?.user?.email
   )
-  const reposted = !!post.Reports?.find(
-    heart => heart.userId === session?.user?.email
-  )
+
   const liked = !!post.Hearts?.find(
     heart => heart.userId === session?.user?.email
   )
@@ -36,7 +41,7 @@ export default function ActionButtons({ white, post }: Props) {
   const userEmail = session?.user?.email
 
   const updatePostInCache = (
-    addHeart: boolean,
+    option: 'heart' | 'unheart' | 'repost' | 'unrepost',
     queryKey: readonly unknown[],
     value: Post | InfiniteData<Post[]> | undefined
   ) => {
@@ -47,23 +52,42 @@ export default function ActionButtons({ white, post }: Props) {
         // InfiniteData인 경우
         const post = draft.pages.flat().find(p => p.postId === postId)
         if (post) {
-          if (addHeart) {
+          if (option === 'heart') {
             // 이미 좋아요가 있는지 확인
             if (!post.Hearts.some(h => h.userId === userEmail)) {
               post.Hearts.push({ userId: userEmail as string })
             }
-          } else {
+          } else if (option === 'unheart') {
             post.Hearts = post.Hearts.filter(h => h.userId !== userEmail)
+          }
+
+          if (option === 'repost') {
+            // 이미 재게시글이 있는지 확인
+            if (!post.Reposts.some(h => h.userId === userEmail)) {
+              post.Reposts.push({ userId: userEmail as string })
+            }
+          } else if (option === 'unrepost') {
+            post.Reposts = post.Reposts.filter(h => h.userId !== userEmail)
           }
         }
       } else if ('postId' in draft && draft.postId === postId) {
         // 단일 Post인 경우
-        if (addHeart) {
+        if (option === 'heart') {
+          // 좋아요
           if (!draft.Hearts.some(h => h.userId === userEmail)) {
             draft.Hearts.push({ userId: userEmail as string })
           }
-        } else {
+        } else if (option === 'unheart') {
           draft.Hearts = draft.Hearts.filter(h => h.userId !== userEmail)
+        }
+
+        if (option === 'repost') {
+          // 재게시글
+          if (!draft.Reposts.some(h => h.userId === userEmail)) {
+            draft.Reposts.push({ userId: userEmail as string })
+          }
+        } else if (option === 'unrepost') {
+          draft.Reposts = draft.Reposts.filter(h => h.userId !== userEmail)
         }
       }
     })
@@ -74,6 +98,14 @@ export default function ActionButtons({ white, post }: Props) {
   const heart = useMutation({
     mutationFn: () => addHeart(postId),
     onMutate() {
+      if (modalStore.data) {
+        modalStore.setData({
+          ...post,
+          heartCount: post.heartCount + 1,
+          Hearts: [...post.Hearts, { userId: session.user.email }],
+        })
+      }
+
       const queryCache = queryClient.getQueryCache()
       const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
 
@@ -82,7 +114,7 @@ export default function ActionButtons({ white, post }: Props) {
           const value = queryClient.getQueryData<Post | InfiniteData<Post[]>>(
             queryKey
           )
-          updatePostInCache(true, queryKey, value)
+          updatePostInCache('heart', queryKey, value)
         }
       })
     },
@@ -95,20 +127,28 @@ export default function ActionButtons({ white, post }: Props) {
           const value = queryClient.getQueryData<Post | InfiniteData<Post[]>>(
             queryKey
           )
-          updatePostInCache(false, queryKey, value)
+          updatePostInCache('unheart', queryKey, value)
         }
       })
     },
     onSettled() {
-      // queryClient.invalidateQueries({
-      //   queryKey: ['posts']
-      // })
+      queryClient.invalidateQueries({
+        queryKey: ['posts'],
+      })
     },
   })
 
   const unheart = useMutation({
     mutationFn: () => deleteHeart(postId),
     onMutate() {
+      if (modalStore.data) {
+        modalStore.setData({
+          ...post,
+          heartCount: post.heartCount - 1,
+          Hearts: post.Hearts.filter(v => v.userId !== session.user.email),
+        })
+      }
+
       const queryCache = queryClient.getQueryCache()
       const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
 
@@ -117,7 +157,7 @@ export default function ActionButtons({ white, post }: Props) {
           const value = queryClient.getQueryData<Post | InfiniteData<Post[]>>(
             queryKey
           )
-          updatePostInCache(false, queryKey, value)
+          updatePostInCache('unheart', queryKey, value)
         }
       })
     },
@@ -130,33 +170,130 @@ export default function ActionButtons({ white, post }: Props) {
           const value = queryClient.getQueryData<Post | InfiniteData<Post[]>>(
             queryKey
           )
-          updatePostInCache(true, queryKey, value)
+          updatePostInCache('heart', queryKey, value)
         }
       })
     },
-    onSettled() {},
+    onSettled() {
+      queryClient.invalidateQueries({
+        queryKey: ['posts'],
+      })
+    },
+  })
+
+  const repost = useMutation({
+    mutationFn: () => addRepost(postId),
+    onMutate() {
+      if (modalStore.data) {
+        modalStore.setData({
+          ...post,
+          repostCount: post.repostCount + 1,
+          Reposts: [...post.Reposts, { userId: session.user.email }],
+        })
+      }
+
+      const queryCache = queryClient.getQueryCache()
+      const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
+
+      queryKeys.forEach(queryKey => {
+        if (queryKey[0] === 'posts') {
+          const value = queryClient.getQueryData<Post | InfiniteData<Post[]>>(
+            queryKey
+          )
+          updatePostInCache('repost', queryKey, value)
+        }
+      })
+    },
+    onError() {
+      const queryCache = queryClient.getQueryCache()
+      const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
+
+      queryKeys.forEach(queryKey => {
+        if (queryKey[0] === 'posts') {
+          const value = queryClient.getQueryData<Post | InfiniteData<Post[]>>(
+            queryKey
+          )
+          updatePostInCache('unrepost', queryKey, value)
+        }
+      })
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
+    },
+  })
+
+  const unrepost = useMutation({
+    mutationFn: () => deleteRepost(postId),
+    onMutate() {
+      if (modalStore.data) {
+        modalStore.setData({
+          ...post,
+          repostCount: post.repostCount - 1,
+          Reposts: post.Reposts.filter(v => v.userId !== session.user.email),
+        })
+      }
+
+      const queryCache = queryClient.getQueryCache()
+      const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
+
+      queryKeys.forEach(queryKey => {
+        if (queryKey[0] === 'posts') {
+          const value = queryClient.getQueryData<Post | InfiniteData<Post[]>>(
+            queryKey
+          )
+          updatePostInCache('unrepost', queryKey, value)
+        }
+      })
+    },
+    onError() {
+      const queryCache = queryClient.getQueryCache()
+      const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
+
+      queryKeys.forEach(queryKey => {
+        if (queryKey[0] === 'posts') {
+          const value = queryClient.getQueryData<Post | InfiniteData<Post[]>>(
+            queryKey
+          )
+          updatePostInCache('repost', queryKey, value)
+        }
+      })
+    },
+    onSettled: () => {
+      console.log(post.Reposts.length)
+
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
+    },
   })
 
   const onClickComment: MouseEventHandler<HTMLButtonElement> = e => {
     e.stopPropagation()
+    modalStore.setMode('comment')
+    modalStore.setData(post)
+    router.push('/compose/tweet')
   }
   const onClickRepost: MouseEventHandler<HTMLButtonElement> = e => {
     e.stopPropagation()
+    if (post?.User?.id === session?.user?.email) {
+      alert('본인 글을 재게시 할 수 없습니다.')
+      return
+    } else if (post.content === 'repost') {
+      alert('원본 글만 재게시 할 수 있습니다.')
+      return
+    }
+    reposted ? unrepost.mutate() : repost.mutate()
   }
   const onClickHeart: MouseEventHandler<HTMLButtonElement> = e => {
     e.stopPropagation()
     liked ? unheart.mutate() : heart.mutate()
   }
 
+  if (noAction) {
+    return null
+  }
+
   return (
     <div className={style.actionButtons}>
-      <div
-        className={cx(
-          style.commentButton,
-          commented && style.commented,
-          white && style.white
-        )}
-      >
+      <div className={cx(style.commentButton, white && style.white)}>
         <button onClick={onClickComment}>
           <svg width={24} viewBox="0 0 24 24" aria-hidden="true">
             <g>
@@ -164,8 +301,9 @@ export default function ActionButtons({ white, post }: Props) {
             </g>
           </svg>
         </button>
-        <div className={style.count}>{post.Comments?.length || ''}</div>
+        <div className={style.count}>{post.commentCount || ''}</div>
       </div>
+
       <div
         className={cx(
           style.repostButton,
@@ -180,8 +318,9 @@ export default function ActionButtons({ white, post }: Props) {
             </g>
           </svg>
         </button>
-        <div className={style.count}>{post.Reports?.length || ''}</div>
+        <div className={style.count}>{post.repostCount || ''}</div>
       </div>
+
       <div
         className={cx([
           style.heartButton,
@@ -196,7 +335,7 @@ export default function ActionButtons({ white, post }: Props) {
             </g>
           </svg>
         </button>
-        <div className={style.count}>{post.Hearts?.length || ''}</div>
+        <div className={style.count}>{post.heartCount || ''}</div>
       </div>
     </div>
   )
