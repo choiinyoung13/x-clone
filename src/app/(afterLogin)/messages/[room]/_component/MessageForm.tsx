@@ -3,9 +3,11 @@
 import style from './messageForm.module.css'
 import TextareaAutosize from 'react-textarea-autosize'
 import { ChangeEventHandler, KeyboardEventHandler, useState } from 'react'
+import useSocket from '../_lib/useSocket'
 import { useSession } from 'next-auth/react'
 import { InfiniteData, useQueryClient } from '@tanstack/react-query'
-import type { Message } from '@/model/Message'
+import { Message } from '@/model/Message'
+import { useMessageStore } from '@/store/message'
 
 interface Props {
   id: string
@@ -13,6 +15,8 @@ interface Props {
 
 export default function MessageForm({ id }: Props) {
   const [content, setContent] = useState('')
+  const setGoDown = useMessageStore().setGoDown
+  const [socket] = useSocket()
   const { data: session } = useSession()
   const queryClient = useQueryClient()
   const onChangeContent: ChangeEventHandler<HTMLTextAreaElement> = e => {
@@ -24,6 +28,48 @@ export default function MessageForm({ id }: Props) {
     }
     const ids = [session?.user?.email, id]
     ids.sort()
+    // socket.io
+    socket?.emit('sendMessage', {
+      senderId: session?.user?.email,
+      receiverId: id,
+      content,
+    })
+    // 리액트 쿼리 데이터에 추가
+    const exMessages = queryClient.getQueryData([
+      'rooms',
+      {
+        senderId: session?.user?.email,
+        receiverId: id,
+      },
+      'messages',
+    ]) as InfiniteData<Message[]>
+    if (exMessages && typeof exMessages === 'object') {
+      const newMessages = {
+        ...exMessages,
+        pages: [...exMessages.pages],
+      }
+      const lastPage = newMessages.pages.at(-1)
+      const newLastPage = lastPage ? [...lastPage] : []
+      let lastMessageId = lastPage?.at(-1)?.messageId
+      newLastPage.push({
+        senderId: session.user.email,
+        receiverId: id,
+        content,
+        room: ids.join('-'),
+        messageId: lastMessageId ? lastMessageId + 1 : 1,
+        createdAt: new Date(),
+      })
+      newMessages.pages[newMessages.pages.length - 1] = newLastPage
+      queryClient.setQueryData(
+        [
+          'rooms',
+          { senderId: session?.user?.email, receiverId: id },
+          'messages',
+        ],
+        newMessages
+      )
+      setGoDown(true)
+    }
     setContent('')
   }
 
@@ -56,7 +102,6 @@ export default function MessageForm({ id }: Props) {
           onChange={onChangeContent}
           onKeyDown={onEnter}
           placeholder="새 쪽지 작성하기"
-          className={style.textarea}
         />
         <button
           className={style.submitButton}

@@ -34,7 +34,6 @@
   .leftSectionFixed {
     align-items: flex-start;
   }
-
 }
 
 .leftSectionFixed nav {
@@ -44,7 +43,6 @@
 .leftSectionFixed nav li {
   list-style-type: none;
 }
-
 
 .logo {
   display: inline-block;
@@ -144,7 +142,7 @@
 
 .main {
   width: 600px;
-  height: 200dvh;
+  height: 100dvh;
 }
 
 .rightSection {

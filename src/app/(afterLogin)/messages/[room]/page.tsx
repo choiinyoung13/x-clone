@@ -8,6 +8,7 @@ import { getUserServer } from '../../[username]/_lib/getUserServer'
 import { UserInfo } from './_component/UserInfo'
 import MessageForm from './_component/MessageForm'
 import MessageList from './_component/MessageList'
+import WebsocketComponent from './_component/WebsocketComponent'
 
 dayjs.locale('ko')
 dayjs.extend(relativeTime)
@@ -47,8 +48,9 @@ export default async function ChatRoom({ params }: Props) {
 
   return (
     <main className={style.main}>
+      <WebsocketComponent />
       <UserInfo id={ids[0]} />
-      <MessageList messages={messages} />
+      <MessageList id={ids[0]} />
       <MessageForm id={ids[0]} />
     </main>
   )

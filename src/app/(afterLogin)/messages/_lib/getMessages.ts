@@ -1,10 +1,11 @@
 import { Message } from '@/model/Message'
+import { QueryFunction } from '@tanstack/react-query'
 
-type Props = {
-  pageParam?: number
-  queryKey: [string, { senderId: string; receiverId: string }, string]
-}
-export async function getMessages({ pageParam, queryKey }: Props) {
+export const getMessages: QueryFunction<
+  Message[],
+  [string, { senderId: string; receiverId: string }, string],
+  number
+> = async ({ pageParam, queryKey }) => {
   const [_, userInfo] = queryKey
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${userInfo.senderId}/rooms/${userInfo.receiverId}?cursor=${pageParam}`,
@@ -24,5 +25,5 @@ export async function getMessages({ pageParam, queryKey }: Props) {
     throw new Error('Failed to fetch data')
   }
 
-  return res.json() as Promise<Message[]>
+  return res.json()
 }
