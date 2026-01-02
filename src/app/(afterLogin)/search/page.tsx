@@ -33,7 +33,7 @@ export default async function Search({ searchParams }: Props) {
             <BackButton />
           </div>
           <div className={style.formZone}>
-            <SearchForm q={params.q} />
+            <SearchForm />
           </div>
         </div>
         <Tab />

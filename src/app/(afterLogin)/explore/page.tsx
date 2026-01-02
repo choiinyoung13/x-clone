@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: '탐색해보세요.',
 }
 
-export default function Home() {
+export default async function Home() {
   return (
     <main className={style.main}>
       <div className={style.formZone}>

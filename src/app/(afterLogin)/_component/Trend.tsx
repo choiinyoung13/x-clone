@@ -7,8 +7,10 @@ interface Props {
 }
 
 export default function Trend({ trend }: Props) {
+  const title = trend.title.startsWith('#') ? trend.title.slice(1) : trend.title
+
   return (
-    <Link href={`/search?q=${trend.title}`} className={style.container}>
+    <Link href={`/search?q=${title}`} className={style.container}>
       <div className={style.count}>실시간트렌드</div>
       <div className={style.title}>{trend.title}</div>
       <div className={style.count}>{trend.count.toLocaleString()} posts</div>
