@@ -17,6 +17,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'picsum.photos',
       },
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+      },
     ],
     // 로컬 개발 환경에서 상대 경로 이미지 허용
     unoptimized: process.env.NODE_ENV === 'development',
