@@ -37,6 +37,11 @@ const nextConfig: NextConfig = {
         source: '/upload/:slug',
         destination: `${baseUrl}/upload/:slug`,
       },
+      // /api/auth를 제외한 모든 /api/* 경로를 백엔드로 프록시
+      {
+        source: '/api/:path*',
+        destination: `${baseUrl}/api/:path*`,
+      },
     ]
   },
 }
