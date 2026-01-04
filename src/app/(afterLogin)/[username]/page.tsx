@@ -17,14 +17,21 @@ type Props = {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { username } = await params
-  const user: User = await getUserServer({
-    queryKey: ['users', username],
-  })
+  try {
+    const { username } = await params
+    const user: User = await getUserServer({
+      queryKey: ['users', username],
+    })
 
-  return {
-    title: `${user.nickname} (${user.id}) / Z`,
-    description: `${user.nickname} (${user.id}) 프로필 / Z`,
+    return {
+      title: `${user.nickname} (${user.id}) / Z`,
+      description: `${user.nickname} (${user.id}) 프로필 / Z`,
+    }
+  } catch {
+    return {
+      title: '프로필 / Z',
+      description: '프로필 / Z',
+    }
   }
 }
 

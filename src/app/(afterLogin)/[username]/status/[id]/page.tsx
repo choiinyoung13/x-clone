@@ -17,14 +17,21 @@ import { Metadata } from 'next'
 import { getPostByIdServer } from './_lib/getPostByIdServer'
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { username, id } = await params
-  const [user, post]: [User, Post] = await Promise.all([
-    getUserServer({ queryKey: ['users', username] }),
-    getPostByIdServer({ queryKey: ['posts', id] }),
-  ])
-  return {
-    title: `Z에서 ${user.nickname} 님 : ${post.content}`,
-    description: post.content,
+  try {
+    const { username, id } = await params
+    const [user, post]: [User, Post] = await Promise.all([
+      getUserServer({ queryKey: ['users', username] }),
+      getPostByIdServer({ queryKey: ['posts', id] }),
+    ])
+    return {
+      title: `Z에서 ${user.nickname} 님 : ${post.content}`,
+      description: post.content,
+    }
+  } catch {
+    return {
+      title: '게시물 / Z',
+      description: '게시물 / Z',
+    }
   }
 }
 

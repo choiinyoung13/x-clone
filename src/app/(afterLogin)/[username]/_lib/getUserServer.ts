@@ -25,5 +25,14 @@ export const getUserServer = async ({
     throw new Error('Failed to fetch data')
   }
 
-  return res.json()
+  const text = await res.text()
+  if (!text) {
+    throw new Error('Empty response')
+  }
+
+  try {
+    return JSON.parse(text)
+  } catch {
+    throw new Error('Invalid JSON response')
+  }
 }

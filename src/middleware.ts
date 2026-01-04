@@ -19,12 +19,67 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // /api/auth는 Next.js API Route가 처리하므로 middleware에서 건드리지 않음
-  // 나머지 /api/*는 next.config.ts의 rewrites가 처리
+  // /api/auth를 제외한 모든 /api/* 경로를 백엔드로 프록시
+  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/auth')) {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
+    if (baseUrl) {
+      try {
+        const url = new URL(pathname + request.nextUrl.search, baseUrl)
+
+        // 요청 본문 읽기
+        let body: ReadableStream | null = null
+        if (request.method !== 'GET' && request.method !== 'HEAD') {
+          body = request.body
+        }
+
+        // 헤더 복사 (중요한 헤더만)
+        const headers = new Headers()
+        request.headers.forEach((value, key) => {
+          // 호스트 헤더는 제외
+          if (key.toLowerCase() !== 'host') {
+            headers.set(key, value)
+          }
+        })
+
+        const response = await fetch(url, {
+          method: request.method,
+          headers: headers,
+          body: body,
+        })
+
+        const data = await response.text()
+
+        // 응답 헤더 복사
+        const responseHeaders = new Headers()
+        response.headers.forEach((value, key) => {
+          // CORS 관련 헤더는 제거 (Next.js가 처리)
+          if (!key.toLowerCase().startsWith('access-control-')) {
+            responseHeaders.set(key, value)
+          }
+        })
+
+        return new NextResponse(data, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: responseHeaders,
+        })
+      } catch (error) {
+        console.error('Proxy error:', error)
+        return NextResponse.next()
+      }
+    }
+  }
 
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: ['/compose/tweet', '/home', '/explore', '/messages', '/search'],
+  matcher: [
+    '/compose/tweet',
+    '/home',
+    '/explore',
+    '/messages',
+    '/search',
+    '/api/:path*',
+  ],
 }
