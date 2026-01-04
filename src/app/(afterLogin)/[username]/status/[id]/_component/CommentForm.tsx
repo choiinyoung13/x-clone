@@ -77,7 +77,7 @@ export default function CommentForm({ id }: Props) {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${id}/comments`,
+        `/api/posts/${id}/comments`,
         {
           method: 'post',
           body: formData,

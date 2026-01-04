@@ -18,7 +18,7 @@ export default function FollowButton({ user }: Props) {
   const follow = useMutation({
     mutationFn: async () =>
       await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${user.id}/follow`,
+        `/api/users/${user.id}/follow`,
         {
           method: 'post',
           credentials: 'include',
@@ -89,7 +89,7 @@ export default function FollowButton({ user }: Props) {
   const unfollow = useMutation({
     mutationFn: async () =>
       await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${user.id}/follow`,
+        `/api/users/${user.id}/follow`,
         {
           method: 'delete',
           credentials: 'include',

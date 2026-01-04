@@ -71,7 +71,7 @@ export default function PostForm({ me }: Props) {
     })
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`, {
+      const res = await fetch('/api/posts', {
         method: 'post',
         body: formData,
         credentials: 'include',

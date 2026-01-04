@@ -4,7 +4,7 @@ interface Props {
 
 export async function getFollowingPost({ pageParam }: Props) {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/followings?cursor=${pageParam}`,
+    `/api/posts/followings?cursor=${pageParam}`,
     {
       next: { tags: ['posts', 'followings'] },
       credentials: 'include',

@@ -8,7 +8,7 @@ export const getUserPosts: QueryFunction<
   const [_1, _2, username] = queryKey
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${username}/posts?cursor=${pageParam}`,
+    `/api/users/${username}/posts?cursor=${pageParam}`,
     {
       next: { tags: ['posts', 'users', username] },
     }

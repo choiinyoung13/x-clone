@@ -14,7 +14,7 @@ export const getSearchResult: QueryFunction<
   params.set('cursor', String(pageParam))
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts?${params.toString()}`,
+    `/api/posts?${params.toString()}`,
     {
       next: {
         tags: ['posts', 'search', JSON.stringify(searchParams)],

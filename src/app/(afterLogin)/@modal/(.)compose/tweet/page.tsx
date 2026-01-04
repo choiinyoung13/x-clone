@@ -37,7 +37,7 @@ export default function TweetModal() {
         p && formData.append('images', p.file)
       })
 
-      return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`, {
+      return fetch('/api/posts', {
         method: 'post',
         body: formData,
         credentials: 'include',
@@ -66,14 +66,11 @@ export default function TweetModal() {
         p && formData.append('images', p.file)
       })
 
-      return fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${parent.postId}/comments`,
-        {
-          method: 'post',
-          body: formData,
-          credentials: 'include',
-        }
-      )
+      return fetch(`/api/posts/${parent.postId}/comments`, {
+        method: 'post',
+        body: formData,
+        credentials: 'include',
+      })
     },
     onSuccess: () => {
       setPreview([])

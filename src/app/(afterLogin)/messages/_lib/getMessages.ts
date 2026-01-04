@@ -8,7 +8,7 @@ export const getMessages: QueryFunction<
 > = async ({ pageParam, queryKey }) => {
   const [_, userInfo] = queryKey
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${userInfo.senderId}/rooms/${userInfo.receiverId}?cursor=${pageParam}`,
+    `/api/users/${userInfo.senderId}/rooms/${userInfo.receiverId}?cursor=${pageParam}`,
     {
       next: {
         tags: ['rooms'],
