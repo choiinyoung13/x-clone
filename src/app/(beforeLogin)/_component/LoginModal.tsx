@@ -77,7 +77,7 @@ export default function LoginModal() {
                 value={id}
                 onChange={onChangeId}
                 type="text"
-                placeholder=""
+                placeholder="테스트 계정 아이디: test1"
               />
             </div>
             <div className={style.inputDiv}>
@@ -90,7 +90,7 @@ export default function LoginModal() {
                 value={password}
                 onChange={onChangePassword}
                 type="password"
-                placeholder=""
+                placeholder="테스트 계정 비밀번호: 123"
               />
             </div>
           </div>
