@@ -118,7 +118,14 @@ export default function ActionButtons({ white, post, noAction }: Props) {
         }
       })
     },
-    onError() {
+    onError(error) {
+      console.error('좋아요 처리 실패:', error)
+      alert(
+        error instanceof Error
+          ? error.message
+          : '좋아요 처리 중 오류가 발생했습니다.'
+      )
+
       const queryCache = queryClient.getQueryCache()
       const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
 
@@ -161,7 +168,14 @@ export default function ActionButtons({ white, post, noAction }: Props) {
         }
       })
     },
-    onError() {
+    onError(error) {
+      console.error('좋아요 취소 처리 실패:', error)
+      alert(
+        error instanceof Error
+          ? error.message
+          : '좋아요 취소 처리 중 오류가 발생했습니다.'
+      )
+
       const queryCache = queryClient.getQueryCache()
       const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
 
@@ -204,7 +218,14 @@ export default function ActionButtons({ white, post, noAction }: Props) {
         }
       })
     },
-    onError() {
+    onError(error) {
+      console.error('재게시 처리 실패:', error)
+      alert(
+        error instanceof Error
+          ? error.message
+          : '재게시 처리 중 오류가 발생했습니다.'
+      )
+
       const queryCache = queryClient.getQueryCache()
       const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
 
@@ -245,7 +266,14 @@ export default function ActionButtons({ white, post, noAction }: Props) {
         }
       })
     },
-    onError() {
+    onError(error) {
+      console.error('재게시 취소 처리 실패:', error)
+      alert(
+        error instanceof Error
+          ? error.message
+          : '재게시 취소 처리 중 오류가 발생했습니다.'
+      )
+
       const queryCache = queryClient.getQueryCache()
       const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
 

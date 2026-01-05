@@ -43,7 +43,11 @@ export default function Post({ noImage, post, noAction }: Props) {
       )}
       <div className={style.postWrapper}>
         <div className={style.postUserSection}>
-          <Link href={`/${post.User.id}`} className={style.postUserImage}>
+          <Link
+            href={`/${post.User.id}`}
+            className={style.postUserImage}
+            onClick={e => e.stopPropagation()}
+          >
             <Image
               src={target?.User?.image}
               alt={target?.User?.nickname}
@@ -55,7 +59,7 @@ export default function Post({ noImage, post, noAction }: Props) {
         </div>
         <div className={style.postBody}>
           <div className={style.postMeta}>
-            <Link href={`/${target.User.id}`}>
+            <Link href={`/${post.User.id}`} onClick={e => e.stopPropagation()}>
               <span className={style.postUserName}>
                 {target?.User?.nickname}
               </span>

@@ -1,15 +1,25 @@
 export const deleteHeart = async (id: number) => {
-  const res = await fetch(
-    `/api/posts/${id}/heart`,
-    {
+  try {
+    const res = await fetch(`/api/posts/${id}/heart`, {
       method: 'delete',
       credentials: 'include',
+    })
+
+    if (!res.ok) {
+      const errorData = await res
+        .json()
+        .catch(() => ({ message: '알 수 없는 오류가 발생했습니다.' }))
+      throw new Error(errorData.message || `서버 오류: ${res.status}`)
     }
-  )
 
-  if (!res.ok) {
-    throw new Error('Failed to fetch data')
+    return res.json()
+  } catch (error) {
+    if (error instanceof TypeError && error.message === 'Failed to fetch') {
+      throw new Error('네트워크 연결을 확인해주세요.')
+    }
+    if (error instanceof Error) {
+      throw error
+    }
+    throw new Error('좋아요 취소 처리 중 오류가 발생했습니다.')
   }
-
-  return res.json()
 }
