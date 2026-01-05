@@ -49,9 +49,10 @@ export const signupAction = async (
     )
     console.log(response.status)
     if (response.status === 403) {
-      return { message: 'user_exists' }
+      return { enteredValue: { id, password, name }, message: 'user_exists' }
     } else if (response.status === 400) {
-      return { message: (await response.json()).data[0] }
+      const errorData = await response.json().catch(() => ({ data: ['알 수 없는 오류가 발생했습니다.'] }))
+      return { enteredValue: { id, password, name }, message: errorData.data[0] }
     }
     console.log(await response.json())
     shouldRedirect = true
@@ -61,8 +62,8 @@ export const signupAction = async (
       redirect: false,
     })
   } catch (err) {
-    console.error(err)
-    return { message: null }
+    console.error('회원가입 오류:', err)
+    return { enteredValue: { id, password, name }, message: '네트워크 오류가 발생했습니다. 다시 시도해주세요.' }
   }
 
   if (shouldRedirect) {

@@ -2,7 +2,7 @@
 
 import style from './signup.module.css'
 import BackButton from '@/app/(beforeLogin)/_component/BackButton'
-import { useActionState } from 'react'
+import { useActionState, useRef, useEffect } from 'react'
 import { useFormStatus } from 'react-dom'
 import { signupAction } from '../_lib/signup'
 
@@ -30,7 +30,18 @@ function showMessage(message: string | null) {
 
 export default function SignupModal() {
   const { pending } = useFormStatus()
-  const [state, formAction] = useActionState(signupAction, { message: null })
+  const [state, formAction] = useActionState(signupAction, {
+    enteredValue: { id: '', password: '', name: '' },
+    message: null,
+  })
+  const imageInputRef = useRef<HTMLInputElement>(null)
+
+  // 에러 발생 시 프로필 이미지 입력 초기화
+  useEffect(() => {
+    if (state?.message && imageInputRef.current) {
+      imageInputRef.current.value = ''
+    }
+  }, [state?.message])
 
   return (
     <>
@@ -86,6 +97,7 @@ export default function SignupModal() {
                   프로필
                 </label>
                 <input
+                  ref={imageInputRef}
                   id="image"
                   name="image"
                   className={style.input}
