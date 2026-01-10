@@ -60,6 +60,67 @@
     border-bottom-style: solid;
 }
 
+@media all and (max-width: 687px) {
+  .main {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .searchTop {
+    width: 100%;
+  }
+
+  .homeFixed {
+    width: 100%;
+  }
+
+  .formZone {
+    width: calc(100% - 56px);
+  }
+}
+
+@media all and (max-width: 480px) {
+  .formZone {
+    width: calc(100% - 50px);
+  }
+
+  .buttonZone {
+    width: 50px;
+  }
+
+  .backButton {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media all and (max-width: 320px) {
+  .formZone {
+    width: calc(100% - 44px);
+  }
+
+  .buttonZone {
+    width: 44px;
+  }
+
+  .backButton {
+    width: 30px;
+    height: 30px;
+  }
+
+  .homeTab {
+    height: 48px;
+  }
+
+  .homeTab > div {
+    font-size: 14px;
+  }
+
+  .list {
+    margin-top: 98px;
+  }
+}
+
 .homeTab {
     height: 53px;
     display: flex;

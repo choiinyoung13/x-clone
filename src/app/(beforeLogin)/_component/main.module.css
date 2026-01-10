@@ -34,6 +34,167 @@
     margin-bottom: 20px;
     margin-top: 40px;
 }
+
+@media all and (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .left {
+    padding: 20px;
+    flex: 0 0 auto;
+  }
+
+  .left img {
+    max-width: 200px;
+    height: auto;
+  }
+
+  .right {
+    padding: 12px 20px;
+    align-items: center;
+    flex: 1;
+    justify-content: flex-start;
+    padding-top: 0;
+  }
+
+  .right h1 {
+    font-size: 48px;
+    margin: 24px 0;
+  }
+
+  .right h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .right h3 {
+    font-size: 16px;
+    margin-bottom: 16px;
+    margin-top: 24px;
+  }
+
+  .signup,
+  .login {
+    width: 280px;
+  }
+}
+
+@media all and (max-width: 480px) {
+  .left {
+    padding: 16px;
+  }
+
+  .left img {
+    max-width: 160px;
+  }
+
+  .right {
+    padding: 8px 16px;
+    padding-top: 0;
+  }
+
+  .right h1 {
+    font-size: 36px;
+    margin: 20px 0;
+  }
+
+  .right h2 {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  .right h3 {
+    font-size: 15px;
+    margin-bottom: 12px;
+    margin-top: 20px;
+  }
+
+  .signup,
+  .login {
+    width: 260px;
+    height: 38px;
+    font-size: 14px;
+  }
+}
+
+@media all and (max-width: 400px) {
+  .left {
+    padding: 14px;
+  }
+
+  .left img {
+    max-width: 140px;
+  }
+
+  .right {
+    padding: 6px 14px;
+    padding-top: 0;
+  }
+
+  .right h1 {
+    font-size: 30px;
+    margin: 16px 0;
+  }
+
+  .right h2 {
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+
+  .right h3 {
+    font-size: 14px;
+    margin-bottom: 10px;
+    margin-top: 18px;
+  }
+
+  .signup,
+  .login {
+    width: 240px;
+    height: 36px;
+    font-size: 13px;
+  }
+}
+
+@media all and (max-width: 320px) {
+  .left {
+    padding: 12px;
+  }
+
+  .left img {
+    max-width: 120px;
+    height: auto;
+  }
+
+  .right {
+    padding: 6px 12px;
+    padding-top: 0;
+  }
+
+  .right h1 {
+    font-size: 28px;
+    margin: 16px 0;
+  }
+
+  .right h2 {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .right h3 {
+    font-size: 14px;
+    margin-bottom: 10px;
+    margin-top: 16px;
+  }
+
+  .signup,
+  .login {
+    width: 100%;
+    max-width: 240px;
+    height: 36px;
+    font-size: 13px;
+  }
+}
 @media all and (min-width: 1000px) {
     .container {
         flex-direction: row;

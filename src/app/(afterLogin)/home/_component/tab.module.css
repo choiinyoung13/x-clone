@@ -61,3 +61,54 @@
     bottom: 0px;
     border-radius: 9999px;
 }
+
+@media all and (max-width: 687px) {
+  .main {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .homeFixed {
+    width: 100%;
+  }
+}
+
+@media all and (max-width: 480px) {
+  .homeText {
+    font-size: 18px;
+    padding: 10px 12px;
+  }
+
+  .homeTab {
+    height: 50px;
+  }
+
+  .homeTab > div {
+    font-size: 14px;
+  }
+
+  .tabIndicator {
+    min-width: 50px;
+    width: 50px;
+  }
+}
+
+@media all and (max-width: 320px) {
+  .homeText {
+    font-size: 16px;
+    padding: 8px 10px;
+  }
+
+  .homeTab {
+    height: 48px;
+  }
+
+  .homeTab > div {
+    font-size: 13px;
+  }
+
+  .tabIndicator {
+    min-width: 44px;
+    width: 44px;
+  }
+}

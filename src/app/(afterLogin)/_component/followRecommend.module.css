@@ -68,3 +68,79 @@
 .followButtonSection .follow:hover {
   background-color: rgb(39, 44, 48);
 }
+
+@media all and (max-width: 480px) {
+  .container {
+    padding: 10px 0;
+    height: 60px;
+  }
+
+  .userLogo,
+  .userLogo img {
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+  }
+
+  .userLogo {
+    margin-right: 10px;
+  }
+
+  .title {
+    font-size: 14px;
+    line-height: 18px;
+  }
+
+  .count {
+    font-size: 12px;
+    line-height: 14px;
+  }
+
+  .followButtonSection {
+    width: 70px;
+  }
+
+  .followButtonSection button {
+    font-size: 13px;
+    height: 30px;
+    border-radius: 15px;
+  }
+}
+
+@media all and (max-width: 320px) {
+  .container {
+    padding: 8px 0;
+    height: 56px;
+  }
+
+  .userLogo,
+  .userLogo img {
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+  }
+
+  .userLogo {
+    margin-right: 8px;
+  }
+
+  .title {
+    font-size: 13px;
+    line-height: 16px;
+  }
+
+  .count {
+    font-size: 11px;
+    line-height: 13px;
+  }
+
+  .followButtonSection {
+    width: 64px;
+  }
+
+  .followButtonSection button {
+    font-size: 12px;
+    height: 28px;
+    border-radius: 14px;
+  }
+}

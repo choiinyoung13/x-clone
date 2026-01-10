@@ -14,6 +14,20 @@
     width: 600px;
   }
 }
+
+@media all and (max-width: 687px) {
+  .main {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media all and (max-width: 480px) {
+  .main {
+    border-left-width: 0;
+    border-right-width: 0;
+  }
+}
 @media (prefers-color-scheme: dark) {
   .main {
     border-color: rgb(47, 51, 54);

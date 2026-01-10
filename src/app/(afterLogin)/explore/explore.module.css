@@ -29,3 +29,61 @@
 .trend h3 {
     padding: 12px 16px;
 }
+
+@media all and (max-width: 687px) {
+  .main {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .formZone {
+    width: calc(100% - 32px);
+    padding-left: 12px;
+  }
+}
+
+@media all and (max-width: 480px) {
+  .main {
+    border-left-width: 0;
+    border-right-width: 0;
+  }
+
+  .formZone {
+    padding-left: 10px;
+    margin-bottom: 50px;
+  }
+
+  .trendBg {
+    margin-top: 50px;
+  }
+
+  .trend {
+    font-size: 18px;
+  }
+
+  .trend h3 {
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+}
+
+@media all and (max-width: 320px) {
+  .formZone {
+    padding-left: 8px;
+    margin-bottom: 40px;
+  }
+
+  .trendBg {
+    margin-top: 40px;
+  }
+
+  .trend {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .trend h3 {
+    padding: 8px 10px;
+    margin-bottom: 8px;
+  }
+}

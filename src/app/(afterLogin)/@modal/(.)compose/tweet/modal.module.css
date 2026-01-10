@@ -162,3 +162,140 @@
   object-fit: cover;
   cursor: pointer;
 }
+
+@media all and (max-width: 768px) {
+  .modal {
+    min-width: 90vw;
+    max-width: 90vw;
+    top: 2%;
+  }
+}
+
+@media all and (max-width: 480px) {
+  .modal {
+    min-width: 100vw;
+    max-width: 100vw;
+    top: 0;
+    border-radius: 0;
+    height: 100vh;
+  }
+
+  .modalBody {
+    padding: 0 12px;
+    margin-top: 24px;
+  }
+
+  .postUserSection {
+    width: 36px;
+    margin-right: 10px;
+  }
+
+  .postUserImage,
+  .postUserImage img {
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+  }
+
+  .input {
+    font-size: 18px;
+    max-height: 180px;
+  }
+
+  .input.noImageHeight {
+    max-height: 200px;
+  }
+
+  .modalFooter {
+    padding: 0 12px;
+  }
+
+  .closeButton {
+    width: 32px;
+    height: 32px;
+    left: 6px;
+    top: 6px;
+  }
+
+  .uploadButton {
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+  }
+
+  .actionButton {
+    width: 80px;
+    height: 32px;
+    font-size: 15px;
+    border-radius: 16px;
+  }
+
+  .previewSection {
+    max-height: 250px;
+  }
+
+  .previewSection img {
+    height: 120px;
+  }
+}
+
+@media all and (max-width: 320px) {
+  .modalBody {
+    padding: 0 10px;
+    margin-top: 20px;
+  }
+
+  .postUserSection {
+    width: 32px;
+    margin-right: 8px;
+  }
+
+  .postUserImage,
+  .postUserImage img {
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+  }
+
+  .input {
+    font-size: 16px;
+    max-height: 160px;
+  }
+
+  .input.noImageHeight {
+    max-height: 180px;
+  }
+
+  .modalFooter {
+    padding: 0 10px;
+  }
+
+  .closeButton {
+    width: 30px;
+    height: 30px;
+    left: 4px;
+    top: 4px;
+  }
+
+  .uploadButton {
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+  }
+
+  .actionButton {
+    width: 70px;
+    height: 30px;
+    font-size: 14px;
+    border-radius: 15px;
+  }
+
+  .previewSection {
+    max-height: 200px;
+    gap: 3px;
+  }
+
+  .previewSection img {
+    height: 100px;
+  }
+}

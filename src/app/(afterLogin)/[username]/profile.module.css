@@ -22,6 +22,97 @@
   margin-left: 30px;
 }
 
+@media all and (max-width: 480px) {
+  .headerTitle {
+    font-size: 18px;
+    margin-left: 16px;
+  }
+
+  .userZone {
+    padding: 10px 12px;
+  }
+
+  .userImage,
+  .userImage img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .userName > div:first-child {
+    font-size: 18px;
+  }
+
+  .userName > div:last-child {
+    font-size: 14px;
+  }
+
+  .followButton {
+    padding: 0 12px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .messageButton {
+    width: 32px;
+    height: 32px;
+    margin-right: 6px;
+  }
+}
+
+@media all and (max-width: 320px) {
+  .headerTitle {
+    font-size: 16px;
+    margin-left: 12px;
+  }
+
+  .userZone {
+    padding: 8px 10px;
+  }
+
+  .userImage,
+  .userImage img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .userName {
+    margin: 0 8px;
+  }
+
+  .userName > div:first-child {
+    font-size: 16px;
+  }
+
+  .userName > div:last-child {
+    font-size: 13px;
+  }
+
+  .followButton {
+    padding: 0 10px;
+    height: 30px;
+    font-size: 13px;
+  }
+
+  .messageButton {
+    width: 30px;
+    height: 30px;
+    margin-right: 4px;
+  }
+
+  .followInfo {
+    gap: 12px;
+  }
+
+  .followInfo span:first-of-type {
+    font-size: 1.2rem;
+  }
+
+  .backButton {
+    width: 32px;
+    height: 32px;
+  }
+}
+
 .userZone {
   display: flex;
   flex-direction: column;

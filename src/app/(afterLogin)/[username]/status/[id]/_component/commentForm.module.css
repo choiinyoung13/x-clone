@@ -101,3 +101,94 @@
   object-fit: cover;
   cursor: pointer;
 }
+
+@media all and (max-width: 480px) {
+  .postForm {
+    padding: 12px 12px 6px;
+  }
+
+  .postUserSection {
+    width: 36px;
+    margin-right: 10px;
+  }
+
+  .postUserImage,
+  .postUserImage img {
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+  }
+
+  .postForm textarea {
+    font-size: 18px;
+    line-height: 22px;
+    padding: 10px 0;
+  }
+
+  .uploadButton {
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+  }
+
+  .actionButton {
+    width: 80px;
+    height: 32px;
+    font-size: 14px;
+    border-radius: 16px;
+  }
+
+  .previewSection {
+    max-height: 250px;
+  }
+
+  .previewSection img {
+    height: 120px;
+  }
+}
+
+@media all and (max-width: 320px) {
+  .postForm {
+    padding: 10px 10px 6px;
+  }
+
+  .postUserSection {
+    width: 32px;
+    margin-right: 8px;
+  }
+
+  .postUserImage,
+  .postUserImage img {
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+  }
+
+  .postForm textarea {
+    font-size: 16px;
+    line-height: 20px;
+    padding: 8px 0;
+  }
+
+  .uploadButton {
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+  }
+
+  .actionButton {
+    width: 70px;
+    height: 30px;
+    font-size: 13px;
+    border-radius: 15px;
+  }
+
+  .previewSection {
+    max-height: 200px;
+    gap: 3px;
+  }
+
+  .previewSection img {
+    height: 100px;
+  }
+}

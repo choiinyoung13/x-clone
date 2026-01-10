@@ -9,6 +9,56 @@
   transition-duration: 0.2s;
   cursor: pointer;
 }
+
+@media all and (max-width: 480px) {
+  .post {
+    padding: 10px 12px;
+  }
+}
+
+@media all and (max-width: 320px) {
+  .post {
+    padding: 8px 10px;
+  }
+
+  .postUserSection {
+    width: 36px;
+    margin-right: 8px;
+  }
+
+  .postUserImage,
+  .postUserImage img,
+  .postShade {
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+  }
+
+  .postMeta {
+    font-size: 14px;
+  }
+
+  .actionButtons {
+    margin-top: 8px;
+    column-gap: 2px;
+  }
+
+  .commentButton button,
+  .repostButton button,
+  .heartButton button {
+    width: 34px;
+    height: 34px;
+    margin-right: 2px;
+  }
+
+  .actionButtons .count {
+    font-size: 12px;
+  }
+
+  .postImageSection {
+    margin-top: 8px;
+  }
+}
 .post:hover {
   background-color: rgba(0, 0, 0, 0.03);
 }

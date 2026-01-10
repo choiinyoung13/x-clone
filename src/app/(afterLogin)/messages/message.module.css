@@ -53,3 +53,66 @@
 .roomChatInfo b {
     color: black;
 }
+
+@media all and (max-width: 687px) {
+  .main {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media all and (max-width: 480px) {
+  .main {
+    border-left-width: 0;
+    border-right-width: 0;
+  }
+
+  .header {
+    padding: 0 12px;
+  }
+
+  .header h3 {
+    font-size: 18px;
+  }
+
+  .room {
+    padding: 12px;
+  }
+
+  .roomUserImage,
+  .roomUserImage img {
+    width: 36px;
+    height: 36px;
+    margin-right: 12px;
+  }
+
+  .roomChatInfo {
+    font-size: 14px;
+  }
+}
+
+@media all and (max-width: 320px) {
+  .header {
+    padding: 0 10px;
+    height: 48px;
+  }
+
+  .header h3 {
+    font-size: 16px;
+  }
+
+  .room {
+    padding: 10px 8px;
+  }
+
+  .roomUserImage,
+  .roomUserImage img {
+    width: 32px;
+    height: 32px;
+    margin-right: 10px;
+  }
+
+  .roomChatInfo {
+    font-size: 13px;
+  }
+}

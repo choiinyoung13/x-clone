@@ -78,3 +78,92 @@
     color: #536471;
     font-size: 13px;
 }
+
+@media all and (max-width: 687px) {
+  .main {
+    width: 100%;
+    min-width: 0;
+    padding: 0 12px;
+  }
+}
+
+@media all and (max-width: 480px) {
+  .main {
+    border-left-width: 0;
+    border-right-width: 0;
+    padding: 0 10px;
+  }
+
+  .header {
+    height: 50px;
+  }
+
+  .header h2 {
+    margin-left: 30px;
+    font-size: 18px;
+  }
+
+  .userInfo {
+    padding: 16px 12px 50px;
+  }
+
+  .userInfo img {
+    width: 56px;
+    height: 56px;
+  }
+
+  .content {
+    padding: 10px 14px;
+    font-size: 14px;
+    line-height: 18px;
+  }
+
+  .message {
+    padding-bottom: 20px;
+  }
+
+  .date {
+    font-size: 12px;
+    margin-top: 6px;
+  }
+}
+
+@media all and (max-width: 320px) {
+  .main {
+    padding: 0 8px;
+  }
+
+  .header {
+    height: 48px;
+  }
+
+  .header h2 {
+    margin-left: 24px;
+    font-size: 16px;
+  }
+
+  .userInfo {
+    padding: 12px 10px 40px;
+    margin-bottom: 16px;
+  }
+
+  .userInfo img {
+    width: 48px;
+    height: 48px;
+  }
+
+  .content {
+    padding: 8px 12px;
+    font-size: 13px;
+    line-height: 16px;
+  }
+
+  .message {
+    padding-bottom: 16px;
+  }
+
+  .date {
+    font-size: 11px;
+    margin-top: 4px;
+  }
+}

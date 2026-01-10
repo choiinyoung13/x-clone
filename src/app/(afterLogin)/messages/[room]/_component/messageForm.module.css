@@ -46,3 +46,55 @@
   padding-bottom: 2px;
   padding-left: 10px;
 }
+
+@media all and (max-width: 480px) {
+  .formZone {
+    height: 52px;
+  }
+
+  .form {
+    margin: 3px 10px;
+    padding: 3px;
+    border-radius: 14px;
+  }
+
+  .form textarea {
+    font-size: 14px;
+    line-height: 18px;
+  }
+
+  .submitButton {
+    width: 32px;
+    height: 32px;
+  }
+
+  .textarea {
+    padding-left: 8px;
+  }
+}
+
+@media all and (max-width: 320px) {
+  .formZone {
+    height: 48px;
+  }
+
+  .form {
+    margin: 2px 8px;
+    padding: 2px;
+    border-radius: 12px;
+  }
+
+  .form textarea {
+    font-size: 13px;
+    line-height: 16px;
+  }
+
+  .submitButton {
+    width: 30px;
+    height: 30px;
+  }
+
+  .textarea {
+    padding-left: 6px;
+  }
+}

@@ -21,3 +21,39 @@
   line-height: 16px;
   font-weight: lighter;
 }
+
+@media all and (max-width: 480px) {
+  .container {
+    padding: 10px 12px;
+    height: 76px;
+  }
+
+  .title {
+    font-size: 14px;
+    line-height: 18px;
+    margin-bottom: 3px;
+  }
+
+  .count {
+    font-size: 12px;
+    line-height: 14px;
+  }
+}
+
+@media all and (max-width: 320px) {
+  .container {
+    padding: 8px 10px;
+    height: 70px;
+  }
+
+  .title {
+    font-size: 13px;
+    line-height: 16px;
+    margin-bottom: 2px;
+  }
+
+  .count {
+    font-size: 11px;
+    line-height: 13px;
+  }
+}
